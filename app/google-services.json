@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "799074715546",
+    "firebase_url": "https://souq-elebel.firebaseio.com",
+    "project_id": "souq-elebel",
+    "storage_bucket": "souq-elebel.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:799074715546:android:d49606deb73d00cc2f1c23",
+        "android_client_info": {
+          "package_name": "com.souqelebel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "799074715546-fic8t4u2e8o3knfc026lq38r1ijjt859.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfuXpVClFbKMCxDZIqBTpXGJvGyhw0A3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "799074715546-fic8t4u2e8o3knfc026lq38r1ijjt859.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
