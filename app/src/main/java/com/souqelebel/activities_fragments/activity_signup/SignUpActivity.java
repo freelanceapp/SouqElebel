@@ -1,26 +1,53 @@
 package com.souqelebel.activities_fragments.activity_signup;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_home.HomeActivity;
 import com.souqelebel.databinding.ActivitySignUpBinding;
@@ -46,7 +73,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SignUpActivity extends AppCompatActivity implements Listeners.SignUpListener {
+public class SignUpActivity extends AppCompatActivity implements Listeners.SignUpListener, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private ActivitySignUpBinding binding;
     private final String READ_PERM = Manifest.permission.READ_EXTERNAL_STORAGE;
     private final String write_permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -57,6 +84,15 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
     private Preferences preferences;
     private String phone;
     private String phone_code;
+    private double lat, lng;
+    private Marker marker;
+    private GoogleMap mMap;
+    private float zoom = 6;
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+    private final String finelocperm = Manifest.permission.ACCESS_FINE_LOCATION;
+    private final int loc_req = 1255;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -249,7 +285,7 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
         dialog.setCancelable(false);
         dialog.show();
         Api.getService(Tags.base_url)
-                .signUpWithoutImage(signUpModel.getName(), signUpModel.getPhone_code(), signUpModel.getPhone(),"")
+                .signUpWithoutImage(signUpModel.getName(), signUpModel.getPhone_code(), signUpModel.getPhone(), "")
                 .enqueue(new Callback<UserModel>() {
                     @Override
                     public void onResponse(Call<UserModel> call, Response<UserModel> response) {
@@ -360,5 +396,106 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        initLocationRequest();
+    }
+
+    private void initLocationRequest() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setFastestInterval(1000);
+        locationRequest.setInterval(60000);
+        LocationSettingsRequest.Builder request = new LocationSettingsRequest.Builder();
+        request.addLocationRequest(locationRequest);
+        request.setAlwaysShow(false);
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, request.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                Status status = locationSettingsResult.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        startLocationUpdate();
+
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        try {
+                            status.startResolutionForResult(SignUpActivity.this, 100);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                }
+            }
+        });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdate() {
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                onLocationChanged(locationResult.getLastLocation());
+
+            }
+        };
+        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        if (googleApiClient != null) {
+            googleApiClient.connect();
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        lat = location.getLatitude();
+        lng = location.getLongitude();
+        Addmarker(lat,lng);
+        if (googleApiClient != null) {
+            LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
+            googleApiClient.disconnect();
+        }
+    }
+
+    private void Addmarker(double lat, double lng) {
+
+        this.lat = lat;
+        this.lng = lng;
+
+        if (marker == null) {
+            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
+        } else {
+            marker.setPosition(new LatLng(lat, lng));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
+
+
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (googleApiClient != null) {
+            if (locationCallback != null) {
+                LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
+                googleApiClient.disconnect();
+                googleApiClient = null;
+            }
+        }
     }
 }

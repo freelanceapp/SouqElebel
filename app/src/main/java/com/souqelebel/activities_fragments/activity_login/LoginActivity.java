@@ -35,6 +35,8 @@ import com.souqelebel.models.CountryModel;
 import com.souqelebel.models.LoginModel;
 import com.souqelebel.share.Common;
 import com.souqelebel.singleton.CartSingleton;
+import com.souqelebel.tags.Tags;
+import com.squareup.picasso.Picasso;
 
 
 import java.util.ArrayList;
@@ -158,7 +160,9 @@ public class LoginActivity extends AppCompatActivity implements Listeners.LoginL
     public void setItemData(CountryModel countryModel) {
         dialog.dismiss();
         phone_code = countryModel.getDialCode();
-        binding.tvCode.setText(countryModel.getDialCode());
+        binding.image.setImageResource(countryModel.getFlag());
+      //  Picasso.get().load(getResources().getDrawable(countryModel.getFlag())).into(binding.image);
+       // binding.tvCode.setText(countryModel.getDialCode());
     }
 
     @Override
