@@ -110,34 +110,34 @@ public class Fragment_Search extends Fragment {
 //            }
 //        });
 
-        binding.edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.toString().length() > 0) {
-                    query = editable.toString();
-
-                    search();
-                    binding.progBar.setVisibility(View.GONE);
-                    binding.recViewOffer.setVisibility(View.VISIBLE);
-                } else {
-                    query = "all";
-                    //productModelList.clear();
-                    //searchAdapter.notifyDataSetChanged();
-
-
-                }
-            }
-        });
+//        binding.edtSearch.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                if (editable.toString().length() > 0) {
+//                    query = editable.toString();
+//
+//                    search();
+//                    binding.progBar.setVisibility(View.GONE);
+//                    binding.recViewOffer.setVisibility(View.VISIBLE);
+//                } else {
+//                    query = "all";
+//                    //productModelList.clear();
+//                    //searchAdapter.notifyDataSetChanged();
+//
+//
+//                }
+//            }
+//        });
     }
 
     private void getCategory() {

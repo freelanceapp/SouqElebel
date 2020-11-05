@@ -1,5 +1,6 @@
 package com.souqelebel.activities_fragments.activity_home;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
@@ -29,6 +30,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_My_Reservations;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Search;
@@ -125,13 +128,13 @@ public class HomeActivity extends AppCompatActivity {
             displayFragmentSearch();
         });
 
-        binding.flMyReservations.setOnClickListener(v -> {
-            if (userModel != null) {
-                displayFragmentMyReservations();
-            } else {
-                Common.CreateDialogAlert(this, getResources().getString(R.string.please_sign_in_or_sign_up));
-            }
-        });
+//        binding.flMyReservations.setOnClickListener(v -> {
+//            if (userModel != null) {
+//                displayFragmentMyReservations();
+//            } else {
+//                Common.CreateDialogAlert(this, getResources().getString(R.string.please_sign_in_or_sign_up));
+//            }
+//        });
 
         binding.flProfile.setOnClickListener(v -> {
 
@@ -150,7 +153,13 @@ public class HomeActivity extends AppCompatActivity {
             updateTokenFireBase();
 
         }
-
+        binding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                YoYo.with(Techniques.BounceInDown).duration(10).playOn(binding.fab);
+                displayFragmentMyReservations();
+            }
+        });
 
     }
 
@@ -277,8 +286,6 @@ public class HomeActivity extends AppCompatActivity {
             updateFamilyBoxUi();
             if (fragment_familyBox == null) {
                 fragment_familyBox = Fragment_My_Reservations.newInstance();
-            } else {
-                fragment_familyBox.getOrders();
             }
 
             if (fragment_settings != null && fragment_settings.isAdded()) {
@@ -380,144 +387,166 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private void updateHomUi() {
-        binding.flHome.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.white));
-        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.tvHome.setVisibility(View.VISIBLE);
-
-        binding.flSearch.setBackgroundResource(0);
-        binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvSearch.setVisibility(View.GONE);
-
-        binding.flMyReservations.setBackgroundResource(0);
-        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvReservations.setVisibility(View.GONE);
-
-        binding.flProfile.setBackgroundResource(0);
-        binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvProfile.setVisibility(View.GONE);
-
-        binding.flSettings.setBackgroundResource(0);
-        binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvSettings.setVisibility(View.GONE);
-
-    }
-
-    private void updateDepartmentsUi() {
-        binding.flHome.setBackgroundResource(0);
-        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvHome.setVisibility(View.GONE);
-
+        if (fragment_familyBox != null && fragment_familyBox.isVisible()) {
+            YoYo.with(Techniques.BounceInUp).duration(10).playOn(binding.ll);
+            binding.fab.setVisibility(View.VISIBLE);
+        }
         binding.flSearch.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.tvSearch.setVisibility(View.VISIBLE);
-
-        binding.flMyReservations.setBackgroundResource(0);
-        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvReservations.setVisibility(View.GONE);
-
-        binding.flProfile.setBackgroundResource(0);
-        binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvProfile.setVisibility(View.GONE);
-
-        binding.flSettings.setBackgroundResource(0);
-        binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvSettings.setVisibility(View.GONE);
-
-    }
-
-    private void updateFamilyBoxUi() {
-        binding.flHome.setBackgroundResource(0);
-        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvHome.setVisibility(View.GONE);
-
-        binding.flSearch.setBackgroundResource(0);
-        binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.black));
         binding.tvSearch.setVisibility(View.GONE);
 
-        binding.flMyReservations.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
-        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.tvReservations.setVisibility(View.VISIBLE);
-
-        binding.flProfile.setBackgroundResource(0);
-        binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvProfile.setVisibility(View.GONE);
-
-        binding.flSettings.setBackgroundResource(0);
-        binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvSettings.setVisibility(View.GONE);
-
-    }
-
-    private void updateOrderUi() {
         binding.flHome.setBackgroundResource(0);
-        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvHome.setVisibility(View.GONE);
-
-        binding.flSearch.setBackgroundResource(0);
-        binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvSearch.setVisibility(View.GONE);
-
-
-        binding.flMyReservations.setBackgroundResource(0);
-        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvReservations.setVisibility(View.GONE);
+        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        binding.tvHome.setVisibility(View.VISIBLE);
+//
+//        binding.flMyReservations.setBackgroundResource(0);
+//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setVisibility(View.GONE);
 
         binding.flProfile.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.tvProfile.setVisibility(View.VISIBLE);
-
-        binding.flSettings.setBackgroundResource(0);
-        binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvSettings.setVisibility(View.GONE);
-
-    }
-
-    private void updateProfileUi() {
-        binding.flHome.setBackgroundResource(0);
-        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvHome.setVisibility(View.GONE);
-
-        binding.flSearch.setBackgroundResource(0);
-        binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvSearch.setVisibility(View.GONE);
-
-
-        binding.flMyReservations.setBackgroundResource(0);
-        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.black));
-        binding.tvReservations.setVisibility(View.GONE);
-
-        binding.flProfile.setBackgroundResource(0);
-        binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.black));
-        binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.black));
         binding.tvProfile.setVisibility(View.GONE);
 
         binding.flSettings.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvSettings.setVisibility(View.GONE);
+        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconReservations.setVisibility(View.GONE);
+    }
+
+    private void updateDepartmentsUi() {
+        if (fragment_familyBox != null && fragment_familyBox.isVisible()) {
+            YoYo.with(Techniques.BounceInUp).duration(10).playOn(binding.ll);
+            binding.fab.setVisibility(View.VISIBLE);
+        }
+        binding.flSearch.setBackgroundResource(0);
+        binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+        binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        binding.tvSearch.setVisibility(View.VISIBLE);
+
+        binding.flHome.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvHome.setVisibility(View.GONE);
+
+//        binding.flMyReservations.setBackgroundResource(0);
+//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setVisibility(View.GONE);
+
+        binding.flProfile.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvProfile.setVisibility(View.GONE);
+
+        binding.flSettings.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvSettings.setVisibility(View.GONE);
+        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconReservations.setVisibility(View.GONE);
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private void updateFamilyBoxUi() {
+        binding.flHome.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvHome.setVisibility(View.GONE);
+        binding.fab.setVisibility(View.GONE);
+        binding.flSearch.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvSearch.setVisibility(View.GONE);
+
+//        binding.flMyReservations.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setVisibility(View.VISIBLE);
+        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_white);
+        binding.iconReservations.setVisibility(View.VISIBLE);
+        binding.flProfile.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvProfile.setVisibility(View.GONE);
+
+        binding.flSettings.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvSettings.setVisibility(View.GONE);
+
+    }
+
+    private void updateOrderUi() {
+        if (fragment_familyBox != null && fragment_familyBox.isVisible()) {
+            YoYo.with(Techniques.BounceInUp).duration(10).playOn(binding.ll);
+            binding.fab.setVisibility(View.VISIBLE);
+        }
+        binding.flHome.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvHome.setVisibility(View.GONE);
+        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconReservations.setVisibility(View.GONE);
+        binding.flSearch.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvSearch.setVisibility(View.GONE);
+
+
+//        binding.flMyReservations.setBackgroundResource(0);
+//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setVisibility(View.GONE);
+
+        binding.flSettings.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvSettings.setVisibility(View.GONE);
+
+        binding.flProfile.setBackgroundResource(0);
+        binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+        binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        binding.tvProfile.setVisibility(View.VISIBLE);
+
+    }
+
+    private void updateProfileUi() {
+        if (fragment_familyBox != null && fragment_familyBox.isVisible()) {
+            YoYo.with(Techniques.BounceInUp).duration(10).playOn(binding.ll);
+            binding.fab.setVisibility(View.VISIBLE);
+        }
+        binding.flHome.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvHome.setVisibility(View.GONE);
+        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconReservations.setVisibility(View.GONE);
+        binding.flSearch.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvSearch.setVisibility(View.GONE);
+
+
+//        binding.flMyReservations.setBackgroundResource(0);
+//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
+//        binding.tvReservations.setVisibility(View.GONE);
+
+        binding.flSettings.setBackgroundResource(0);
+        binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+        binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
         binding.tvSettings.setVisibility(View.VISIBLE);
+
+        binding.flProfile.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+        binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.white));
+        binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.white));
+        binding.tvProfile.setVisibility(View.GONE);
 
     }
 

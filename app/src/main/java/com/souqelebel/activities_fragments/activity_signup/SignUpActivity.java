@@ -15,8 +15,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -44,15 +46,20 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.souqelebel.R;
+import com.souqelebel.activities_fragments.activity_bepartener.BePartenerActivity;
 import com.souqelebel.activities_fragments.activity_home.HomeActivity;
 import com.souqelebel.databinding.ActivitySignUpBinding;
 import com.souqelebel.interfaces.Listeners;
 import com.souqelebel.language.Language;
+import com.souqelebel.models.PlaceGeocodeData;
+import com.souqelebel.models.PlaceMapDetailsData;
 import com.souqelebel.models.SignUpModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
@@ -65,6 +72,7 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import io.paperdb.Paper;
 import okhttp3.MultipartBody;
@@ -93,6 +101,8 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
     private LocationCallback locationCallback;
     private final String finelocperm = Manifest.permission.ACCESS_FINE_LOCATION;
     private final int loc_req = 1255;
+    private String lang;
+    private String address;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -110,15 +120,56 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
     }
 
     private void initView() {
+        Paper.init(this);
+        lang = Paper.book().read("lang", Locale.getDefault().getLanguage());
         preferences = Preferences.getInstance();
         signUpModel = new SignUpModel();
         binding.setListener(this);
         signUpModel.setPhone_code(phone_code);
         signUpModel.setPhone(phone);
         binding.setModel(signUpModel);
+        binding.edtAddress.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                String query = binding.edtAddress.getText().toString();
+                if (!TextUtils.isEmpty(query)) {
+                    Common.CloseKeyBoard(SignUpActivity.this, binding.edtAddress);
+                    Search(query);
+                    return false;
+                }
+            }
+            return false;
+        });
 
+        updateUI();
+
+        CheckPermission();
     }
 
+    private void CheckPermission() {
+        if (ActivityCompat.checkSelfPermission(this, finelocperm) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{finelocperm}, loc_req);
+        } else {
+
+            initGoogleApi();
+        }
+    }
+
+    private void initGoogleApi() {
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        googleApiClient.connect();
+    }
+
+    private void updateUI() {
+
+        SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        fragment.getMapAsync(this);
+
+
+    }
 
     private void getDataFromIntent() {
         Intent intent = getIntent();
@@ -460,7 +511,7 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
     public void onLocationChanged(Location location) {
         lat = location.getLatitude();
         lng = location.getLongitude();
-        Addmarker(lat,lng);
+        Addmarker(lat, lng);
         if (googleApiClient != null) {
             LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
             googleApiClient.disconnect();
@@ -485,8 +536,113 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        if (googleMap != null) {
+            mMap = googleMap;
+            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.maps));
+            mMap.setTrafficEnabled(false);
+            mMap.setBuildingsEnabled(false);
+            mMap.setIndoorEnabled(true);
 
+            if (lat == 0.0 && lng == 0.0) {
+                mMap.setOnMapClickListener(latLng -> {
+                    lat = latLng.latitude;
+                    lng = latLng.longitude;
+                    Addmarker(lat, lng);
+                    getGeoData(lat, lng);
+
+                });
+
+            } else {
+                Addmarker(lat, lng);
+
+            }
+
+
+        }
     }
+
+    private void getGeoData(final double lat, double lng) {
+        String location = lat + "," + lng;
+        Api.getService("https://maps.googleapis.com/maps/api/")
+                .getGeoData(location, lang, getString(R.string.map_api_key))
+                .enqueue(new Callback<PlaceGeocodeData>() {
+                    @Override
+                    public void onResponse(Call<PlaceGeocodeData> call, Response<PlaceGeocodeData> response) {
+
+                        if (response.isSuccessful() && response.body() != null) {
+
+                            if (response.body().getResults().size() > 0) {
+                                address = response.body().getResults().get(0).getFormatted_address().replace("Unnamed Road,", "");
+                                binding.edtAddress.setText(address + "");
+                            }
+                        } else {
+
+                            try {
+                                Log.e("error_code", response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<PlaceGeocodeData> call, Throwable t) {
+                        try {
+
+                            Toast.makeText(SignUpActivity.this, getString(R.string.something), Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+
+                        }
+                    }
+                });
+    }
+
+    private void Search(String query) {
+
+
+        String fields = "id,place_id,name,geometry,formatted_address";
+
+        Api.getService("https://maps.googleapis.com/maps/api/")
+                .searchOnMap("textquery", query, fields, lang, getString(R.string.map_api_key))
+                .enqueue(new Callback<PlaceMapDetailsData>() {
+                    @Override
+                    public void onResponse(Call<PlaceMapDetailsData> call, Response<PlaceMapDetailsData> response) {
+
+                        if (response.isSuccessful() && response.body() != null) {
+
+
+                            if (response.body().getCandidates().size() > 0) {
+
+                                address = response.body().getCandidates().get(0).getFormatted_address().replace("Unnamed Road,", "");
+                                binding.edtAddress.setText(address + "");
+                                Addmarker(response.body().getCandidates().get(0).getGeometry().getLocation().getLat(), response.body().getCandidates().get(0).getGeometry().getLocation().getLng());
+                            }
+                        } else {
+
+                            try {
+                                Log.e("error_code", response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<PlaceMapDetailsData> call, Throwable t) {
+                        try {
+
+                            Toast.makeText(SignUpActivity.this, getString(R.string.something), Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+
+                        }
+                    }
+                });
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

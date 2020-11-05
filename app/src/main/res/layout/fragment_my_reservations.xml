@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="lang"
             type="String" />
@@ -14,37 +15,256 @@
         android:layout_height="match_parent"
         android:background="@color/white">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
+            android:fillViewport="true">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recView"
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/small_rounded_stroke_gray_bg">
 
-        </LinearLayout>
+                    <Spinner
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="3dp"
+                        android:background="@color/white">
 
-        <ProgressBar
-            android:id="@+id/progBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            />
+                    </Spinner>
+                </FrameLayout>
 
-        <TextView
-            android:id="@+id/tvNoData"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="18sp"
-            android:textColor="@color/black"
-            android:text="@string/no_data_to_show"
-            android:visibility="gone"
-            />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="@string/adviersment_photos"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/small_rounded_stroke_gray_bg">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/white"
+                            app:counterEnabled="false"
+                            app:errorEnabled="false"
+                            app:helperTextEnabled="false"
+                            app:hintAnimationEnabled="false"
+                            app:hintEnabled="false"
+                            app:hintTextColor="@color/black"
+                            app:startIconDrawable="@drawable/ic_user"
+                            app:startIconTint="@color/colorPrimaryDark">
+
+                            <EditText
+
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/transparent"
+                                android:hint="@string/name"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp"
+                                android:singleLine="true"
+
+                                android:textColor="@color/black"
+                                android:textColorHint="@color/gray4"
+                                android:textSize="15sp"
+
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/small_rounded_stroke_gray_bg">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="95dp"
+                        android:layout_margin="3dp"
+                        android:background="@color/white"
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginEnd="15dp"
+                                android:src="@drawable/ic_info"
+                                android:tint="@color/colorPrimary" />
+                        </FrameLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/white"
+                            android:gravity="start"
+                            app:counterEnabled="false"
+                            app:errorEnabled="false"
+                            app:helperTextEnabled="false"
+                            app:hintAnimationEnabled="false"
+                            app:hintEnabled="false"
+                            app:hintTextColor="@color/black"
+                            app:startIconTint="@color/colorPrimaryDark"
+
+                            >
+
+                            <EditText
+
+                                android:layout_width="match_parent"
+                                android:layout_height="90dp"
+                                android:background="@color/transparent"
+                                android:gravity="start"
+                                android:hint="@string/name"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp"
+                                android:singleLine="true"
+                                android:textColor="@color/black"
+                                android:textColorHint="@color/gray4"
+                                android:textSize="15sp"
+
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/small_rounded_stroke_gray_bg">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/white"
+                            app:counterEnabled="false"
+                            app:errorEnabled="false"
+                            app:helperTextEnabled="false"
+                            app:hintAnimationEnabled="false"
+                            app:hintEnabled="false"
+                            app:hintTextColor="@color/black"
+                            app:startIconDrawable="@drawable/ic_user"
+                            app:startIconTint="@color/colorPrimaryDark">
+
+                            <EditText
+                                android:id="@+id/edtAddress"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/transparent"
+                                android:hint="@string/name"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp"
+                                android:singleLine="true"
+
+                                android:textColor="@color/black"
+                                android:textColorHint="@color/gray4"
+                                android:textSize="15sp"
+
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+                </FrameLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="8dp">
+
+                    <fragment
+                        android:id="@+id/map"
+                        android:name="com.souqelebel.activities_fragments.activity_signup.FragmentMapTouchListener"
+                        android:layout_width="match_parent"
+                        android:layout_height="240dp"
+
+                        />
+
+                </androidx.cardview.widget.CardView>
+
+                <Button
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/rounded_primary_btn"
+                    android:text="@string/share"
+                    android:textColor="@color/white"
+                    android:textSize="17sp" />
+
+            </LinearLayout>
+        </ScrollView>
+
     </FrameLayout>
 </layout>

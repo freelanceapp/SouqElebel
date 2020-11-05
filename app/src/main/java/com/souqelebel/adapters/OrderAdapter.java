@@ -82,7 +82,7 @@ public class OrderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
                 else if (fragment instanceof Fragment_My_Reservations) {
                     Fragment_My_Reservations fragment_my_reservations = (Fragment_My_Reservations) fragment;
-                    fragment_my_reservations.setItemData(model2);
+                   // fragment_my_reservations.setItemData(model2);
                 }
             });
         } else if (holder instanceof LoadHolder) {

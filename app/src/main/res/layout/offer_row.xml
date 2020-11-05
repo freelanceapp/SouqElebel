@@ -33,8 +33,9 @@
 
             <ImageView
                 product_image="@{model.image}"
-                android:layout_width="95dp"
+                android:layout_width="100dp"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:scaleType="centerCrop" />
 
             <LinearLayout
@@ -57,74 +58,115 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:src="@drawable/ic_user"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        
                         android:ellipsize="end"
                         android:maxLines="2"
                         android:text="@{model.address}"
                         android:textColor="@color/gray9"
                         android:textSize="12sp" />
-                    <LinearLayout
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:src="@drawable/ic_user"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="@{model.address}"
+                        android:textColor="@color/gray9"
+                        android:textSize="12sp" />
 
-                        <TextView
-                            android:id="@+id/tvOldprice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_margin="3dp"
-                            android:ellipsize="end"
-                            android:maxLines="2"
-                            android:singleLine="true"
-                            android:text='@{model.old_price+@string/sar}'
-                            android:textColor="@color/gray6"
-                            android:textSize="13sp"
-                            android:visibility='@{model.have_offer.equals("yes")?View.VISIBLE:View.INVISIBLE,default=invisible}'
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:orientation="horizontal">
 
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:src="@drawable/ic_user"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="@{model.address}"
+                        android:textColor="@color/gray9"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:src="@drawable/ic_user"
+                            app:tint="@color/colorPrimary"
                             />
+                    </FrameLayout>
 
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:ellipsize="end"
-                            android:gravity="center"
-                            android:maxLines="2"
-                            android:text='@{model.price+@string/sar}'
-                            android:textColor="@color/colorAccent"
-                            android:textSize="13sp" />
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="@{model.address}"
+                        android:textColor="@color/gray9"
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:background="@drawable/ic_offer"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility='@{model.have_offer.equals("yes")?View.VISIBLE:View.INVISIBLE,default=invisible}'
-                android:rotation='@{lang.equals("ar")?180:0}'>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text='@{model.offer_type.equals("per")?model.offer_value+"%":model.offer_value+@string/sar}'
-                    android:textColor="@color/white"
-                    android:textSize="11sp" />
-            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

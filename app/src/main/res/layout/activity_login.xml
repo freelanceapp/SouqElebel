@@ -88,11 +88,12 @@
                             app:cardCornerRadius="50dp"
                             app:cardElevation="3dp"
                             app:contentPadding="3dp"
+                            app:cardPreventCornerOverlap="true"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@+id/card"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:ignore="RtlCompat">
+                            >
 
                             <de.hdodenhof.circleimageview.CircleImageView
                                 android:id="@+id/image"

@@ -1,5 +1,6 @@
 package com.souqelebel.activities_fragments.activity_login;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -72,10 +73,12 @@ public class LoginActivity extends AppCompatActivity implements Listeners.LoginL
         initView();
     }
 
+    @SuppressLint("ResourceAsColor")
     private void initView() {
         singleton = CartSingleton.newInstance();
         countryModelList = new ArrayList<>(Arrays.asList(countries));
         loginModel = new LoginModel();
+        binding.iconCall.setCardBackgroundColor(R.color.white);
         binding.setLoginModel(loginModel);
         binding.setListener(this);
         Paper.init(this);

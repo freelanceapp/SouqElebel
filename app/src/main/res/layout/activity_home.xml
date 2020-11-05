@@ -26,7 +26,9 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:background="@color/white"
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -154,6 +156,7 @@
                 android:layout_height="0dp"
                 android:clickable="true"
                 android:focusable="true"
+                android:layout_marginBottom="35dp"
                 app:layout_constraintBottom_toTopOf="@id/llNavBottom"
                 app:layout_constraintTop_toBottomOf="@id/view"
 
@@ -179,8 +182,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/small_rounded_btn_primary"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
+
 
                     >
                     <LinearLayout
@@ -217,8 +219,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
+
                     >
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -259,37 +260,28 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
+android:background="@color/colorPrimary"
                     >
                     <LinearLayout
+                        android:id="@+id/ll"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="5dp"
+android:layout_margin="4dp"
+                        android:background="@color/colorPrimary"
 
                         >
                         <ImageView
                             android:id="@+id/iconReservations"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_reservations"
-                            android:tint="@color/black"
-                            />
-                        <TextView
-                            android:id="@+id/tvReservations"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:lines="1"
-                            android:text="@string/my_reservations"
-                            android:textSize="10sp"
-                            android:textColor="@color/black"
-                            android:ellipsize="end"
+                            android:src="@drawable/ic_user"
+                            android:tint="@color/colorPrimary"
                             android:visibility="gone"
                             />
+
                     </LinearLayout>
 
                 </FrameLayout>
@@ -300,8 +292,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
+
                     >
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -341,8 +332,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
+
                     >
                     <LinearLayout
 
@@ -381,7 +371,19 @@
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:backgroundTint="@color/white"
+            android:src="@drawable/ic_user"
+            android:tint="@color/colorPrimary"
+            app:layout_anchor="@id/llNavBottom"
+            app:layout_anchorGravity="center_horizontal"
+            app:elevation="3dp"
+            app:borderWidth="2dp"
 
+            />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
