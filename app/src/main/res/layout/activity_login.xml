@@ -87,13 +87,10 @@
                             app:cardBackgroundColor="@color/white"
                             app:cardCornerRadius="50dp"
                             app:cardElevation="3dp"
-                            app:contentPadding="3dp"
-                            app:cardPreventCornerOverlap="true"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@+id/card"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            >
+                            app:layout_constraintTop_toTopOf="parent">
 
                             <de.hdodenhof.circleimageview.CircleImageView
                                 android:id="@+id/image"
@@ -104,7 +101,7 @@
                                 android:onClick="@{()->listener.showCountryDialog()}"
                                 android:src="@drawable/flag_sa"
                                 app:civ_border_color="@color/white"
-                                app:civ_border_width="1px"
+                                app:civ_border_width="1dp"
                                 app:civ_circle_background_color="@color/white"
                                 app:civ_circle_color="@color/white"
 
