@@ -48,7 +48,7 @@
                 android:padding="8dp"
                 android:rotation='@{lang.equals("ar")?180:0}'
                 android:src="@drawable/ic_left_arrow"
-                android:tint="@color/colorPrimary"
+                app:tint="@color/colorPrimary"
 
                 />
 
