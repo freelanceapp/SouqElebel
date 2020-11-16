@@ -149,7 +149,7 @@ public class Fragment_Main extends Fragment {
             binding.progBar.setVisibility(View.VISIBLE);
             current_page = 1;
             Api.getService(Tags.base_url)
-                    .getOffersProducts("on", category_id + "", "","all","20", current_page)
+                    .getOffersProducts("on", category_id + "", "all", current_page)
                     .enqueue(new Callback<ProductDataModel>() {
                         @Override
                         public void onResponse(Call<ProductDataModel> call, Response<ProductDataModel> response) {
@@ -213,7 +213,7 @@ public class Fragment_Main extends Fragment {
         try {
 
             Api.getService(Tags.base_url)
-                    .getOffersProducts("on", category_id + "","","all", "20", page)
+                    .getOffersProducts("on", category_id + "", "all", page)
                     .enqueue(new Callback<ProductDataModel>() {
                         @Override
                         public void onResponse(Call<ProductDataModel> call, Response<ProductDataModel> response) {

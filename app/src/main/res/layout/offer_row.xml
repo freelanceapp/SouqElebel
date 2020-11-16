@@ -76,7 +76,7 @@
                         
                         android:ellipsize="end"
                         android:maxLines="2"
-                        android:text="@{model.address}"
+                        android:text="@{model.}"
                         android:textColor="@color/gray9"
                         android:textSize="12sp" />
 
