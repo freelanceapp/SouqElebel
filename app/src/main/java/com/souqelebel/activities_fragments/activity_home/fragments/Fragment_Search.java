@@ -3,8 +3,6 @@ package com.souqelebel.activities_fragments.activity_home.fragments;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +21,8 @@ import com.souqelebel.activities_fragments.activity_home.HomeActivity;
 import com.souqelebel.activities_fragments.activity_product_details.ProductDetailsActivity;
 import com.souqelebel.adapters.SearchAdapter;
 import com.souqelebel.databinding.FragmentSearchBinding;
-import com.souqelebel.models.MainCategoryDataModel;
-import com.souqelebel.models.ProductDataModel;
-import com.souqelebel.models.SingleProductDataModel;
+import com.souqelebel.models.MainCategoryModel;
+import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
 import com.souqelebel.remote.Api;
@@ -47,8 +44,8 @@ public class Fragment_Search extends Fragment {
     private Preferences preferences;
     private UserModel userModel;
     private String lang;
-    private List<MainCategoryDataModel.Data> mainDepartmentsList;
-    private List<SingleProductDataModel> offersDataList;
+    private List<MainCategoryModel> mainDepartmentsList;
+    private List<ProductModel> offersDataList;
     private SearchAdapter offersAdapter;
     private String department_id = "all";
     private String query = "all";
@@ -286,7 +283,7 @@ public class Fragment_Search extends Fragment {
             } else {
                 uid = 0;
             }
-            Api.getService(Tags.base_url).
+            /*Api.getService(Tags.base_url).
                     Search("off", uid, query, "all", "all", "all").
                     enqueue(new Callback<ProductDataModel>() {
                         @Override
@@ -347,7 +344,7 @@ public class Fragment_Search extends Fragment {
 
 
                         }
-                    });
+                    });*/
         } catch (Exception e) {
 
         }
@@ -355,7 +352,7 @@ public class Fragment_Search extends Fragment {
 
     }
 
-    public void setItemDataOffers(SingleProductDataModel model) {
+    public void setItemDataOffers(ProductModel model) {
 
         Intent intent = new Intent(activity, ProductDetailsActivity.class);
         intent.putExtra("product_id", model.getId());

@@ -13,18 +13,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.souqelebel.R;
-import com.souqelebel.adapters.ProductDetialsSlidingImage_Adapter;
-import com.souqelebel.adapters.ProductImageAdapter;
 import com.souqelebel.databinding.ActivityImageBinding;
 import com.souqelebel.interfaces.Listeners;
 import com.souqelebel.language.Language;
-import com.souqelebel.models.SingleProductDataModel;
+import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
 import com.souqelebel.singleton.CartSingleton;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import io.paperdb.Paper;
@@ -33,15 +29,12 @@ import io.paperdb.Paper;
 public class ImagesActivity extends AppCompatActivity implements Listeners.BackListener {
     private ActivityImageBinding binding;
     private String lang;
-    private SingleProductDataModel productDataModel;
+    private ProductModel productDataModel;
     private Preferences preferences;
 
     private UserModel userModel;
-    private ProductDetialsSlidingImage_Adapter slidingImage__adapter;
-    private ProductImageAdapter productImageAdapter;
-    private List<SingleProductDataModel.ProductsImages> productsImagesList;
     private CartSingleton cartSingleton;
-    private SingleProductDataModel singleProductDataModel;
+    private ProductModel productModel;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -62,7 +55,7 @@ public class ImagesActivity extends AppCompatActivity implements Listeners.BackL
     private void getDataFromIntent() {
         Intent intent = getIntent();
         if (intent != null) {
-            singleProductDataModel = (SingleProductDataModel) intent.getSerializableExtra("data");
+            productModel = (ProductModel) intent.getSerializableExtra("data");
 
         }
 
@@ -71,45 +64,33 @@ public class ImagesActivity extends AppCompatActivity implements Listeners.BackL
 
 
     private void initView() {
-        productsImagesList = new ArrayList<>();
+       // productsImagesList = new ArrayList<>();
         Paper.init(this);
         cartSingleton = CartSingleton.newInstance();
         preferences = Preferences.getInstance();
         lang = Paper.book().read("lang", Locale.getDefault().getLanguage());
         binding.setBackListener(this);
         binding.setLang(lang);
-        productImageAdapter = new ProductImageAdapter(productsImagesList, this);
+        //productImageAdapter = new ProductImageAdapter(productsImagesList, this);
         binding.recimage.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        binding.recimage.setAdapter(productImageAdapter);
         binding.setModel(productDataModel);
         binding.progBarSlider.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
-        UPDATEUI(singleProductDataModel);
+        UPDATEUI(productModel);
 
 
     }
 
 
-    private void UPDATEUI(SingleProductDataModel body) {
+    private void UPDATEUI(ProductModel body) {
 
         binding.setModel(body);
-        this.singleProductDataModel = body;
+        this.productModel = body;
         binding.progBarSlider.setVisibility(View.GONE);
-//        if (body.getColor() != null) {
-//            binding.frame.setBackgroundColor(Color.parseColor(body.getColor()));
-//        }
-
-        slidingImage__adapter = new ProductDetialsSlidingImage_Adapter(this, body.getProducts_images());
-        binding.pager.setAdapter(slidingImage__adapter);
-        productsImagesList.addAll(body.getProducts_images());
-        productImageAdapter.notifyDataSetChanged();
     }
 
 
     @Override
     public void back() {
-//        if (isDataAdded) {
-//            setResult(RESULT_OK);
-//        }
         finish();
     }
 

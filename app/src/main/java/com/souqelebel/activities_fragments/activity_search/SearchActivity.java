@@ -19,12 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_product_details.ProductDetailsActivity;
-import com.souqelebel.adapters.OffersAdapter;
 import com.souqelebel.databinding.ActivitySearchBinding;
 import com.souqelebel.interfaces.Listeners;
 import com.souqelebel.language.Language;
-import com.souqelebel.models.ProductDataModel;
-import com.souqelebel.models.SingleProductDataModel;
+import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
 import com.souqelebel.remote.Api;
@@ -46,8 +44,7 @@ import retrofit2.Response;
 public class SearchActivity extends AppCompatActivity implements Listeners.BackListener {
     private ActivitySearchBinding binding;
     private String lang;
-    private List<SingleProductDataModel> offersDataList;
-    private OffersAdapter offersAdapter;
+    private List<ProductModel> offersDataList;
     private String query = "all", department_id = "all";
     private UserModel userModel;
     private Preferences preferences;
@@ -82,36 +79,11 @@ public class SearchActivity extends AppCompatActivity implements Listeners.BackL
         binding.setLang(lang);
         binding.progBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
 
-        //productModelList = new ArrayList<>();
         manager = new GridLayoutManager(this, 2);
         binding.recView.setLayoutManager(manager);
-        offersAdapter = new OffersAdapter(offersDataList, this, null);
-        binding.recView.setAdapter(offersAdapter);
-       /* searchAdapter = new SearchAdapter(this,productModelList,this);
-        binding.recView.setAdapter(searchAdapter);
-        binding.recView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-                    int total = binding.recView.getAdapter().getItemCount();
-
-                    int lastVisibleItem = manager.findLastCompletelyVisibleItemPosition();
 
 
-                    if (total > 6 && (total - lastVisibleItem) == 2 && !isLoading) {
-                        isLoading = true;
-                        int page = current_page + 1;
-                        productModelList.add(null);
-                        searchAdapter.notifyDataSetChanged();
-                        loadMore(page);
-                    }
-                }
-            }
-        });*/
 
-
-        //productModelList = new ArrayList<>();
 
         preferences = Preferences.getInstance();
         userModel = preferences.getUserData(this);
@@ -239,81 +211,9 @@ public class SearchActivity extends AppCompatActivity implements Listeners.BackL
 
     public void search() {
         offersDataList.clear();
-        offersAdapter.notifyDataSetChanged();
         binding.progBar.setVisibility(View.VISIBLE);
         binding.tvNoData.setVisibility(View.GONE);
 
-        try {
-            int uid;
-
-            if (userModel != null) {
-                uid = userModel.getUser().getId();
-            } else {
-                uid = 0;
-            }
-            Api.getService(Tags.base_url).
-                    Search("off", uid, query, "all", "all", "all").
-                    enqueue(new Callback<ProductDataModel>() {
-                        @Override
-                        public void onResponse(Call<ProductDataModel> call, Response<ProductDataModel> response) {
-                            binding.progBar.setVisibility(View.GONE);
-
-                            if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-
-                                offersDataList.clear();
-                                offersDataList.addAll(response.body().getData());
-                                if (offersDataList.size() > 0) {
-                                    offersAdapter.notifyDataSetChanged();
-                                } else {
-                                    binding.tvNoData.setVisibility(View.VISIBLE);
-
-                                }
-
-                            } else {
-                                binding.tvNoData.setVisibility(View.VISIBLE);
-
-                                try {
-
-                                    Log.e("error", response.code() + "_" + response.errorBody().string());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                                if (response.code() == 500) {
-                                    Toast.makeText(SearchActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
-
-
-                                } else {
-                                    Toast.makeText(SearchActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
-
-
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<ProductDataModel> call, Throwable t) {
-                            binding.progBar.setVisibility(View.GONE);
-                            binding.tvNoData.setVisibility(View.VISIBLE);
-                            try {
-                                if (t.getMessage() != null) {
-                                    Log.e("error", t.getMessage());
-                                    if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
-                                        Toast.makeText(SearchActivity.this, R.string.something, Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(SearchActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                            } catch (Exception e) {
-                            }
-
-
-                        }
-                    });
-        } catch (Exception e) {
-
-        }
 
 
     }
@@ -342,14 +242,14 @@ public class SearchActivity extends AppCompatActivity implements Listeners.BackL
         }
     }
 
-    public void setItemDataOffers(SingleProductDataModel model) {
+    public void setItemDataOffers(ProductModel model) {
 
         Intent intent = new Intent(this, ProductDetailsActivity.class);
         intent.putExtra("product_id", model.getId());
         startActivityForResult(intent, 100);
     }
 
-    public int like_dislike(SingleProductDataModel productModel, int pos) {
+    public int like_dislike(ProductModel productModel, int pos) {
         if (userModel != null) {
             try {
                 Api.getService(Tags.base_url)

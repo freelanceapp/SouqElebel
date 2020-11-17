@@ -14,7 +14,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_product_details.ProductDetailsActivity;
-import com.souqelebel.models.SingleProductDataModel;
+import com.souqelebel.models.ProductModel;
 import com.souqelebel.tags.Tags;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
@@ -23,13 +23,13 @@ import java.util.List;
 
 
 public class ProductDetialsSlidingImage_Adapter extends PagerAdapter {
-    List<SingleProductDataModel.ProductsImages> IMAGES;
+   // List<ProductModel.ProductsImages> IMAGES;
     private LayoutInflater inflater;
     Context context;
 
-    public ProductDetialsSlidingImage_Adapter(Context context, List<SingleProductDataModel.ProductsImages> IMAGES) {
+    public ProductDetialsSlidingImage_Adapter(Context context) {
         this.context = context;
-        this.IMAGES = IMAGES;
+       // this.IMAGES = IMAGES;
         inflater = LayoutInflater.from(context);
     }
 
@@ -40,7 +40,7 @@ public class ProductDetialsSlidingImage_Adapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return IMAGES.size();
+        return 0;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ProductDetialsSlidingImage_Adapter extends PagerAdapter {
         assert imageLayout != null;
         final RoundedImageView imageView = imageLayout
                 .findViewById(R.id.image);
-        SingleProductDataModel.ProductsImages slider = IMAGES.get(position);
+       /* ProductModel.ProductsImages slider = IMAGES.get(position);
         Picasso.get().load(Uri.parse(Tags.IMAGE_URL + slider.getFull_file())).fit().into(imageView);
         imageLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +61,7 @@ public class ProductDetialsSlidingImage_Adapter extends PagerAdapter {
                     productDetailsActivity.show();
                 }
             }
-        });
+        });*/
         view.addView(imageLayout, 0);
 
         return imageLayout;

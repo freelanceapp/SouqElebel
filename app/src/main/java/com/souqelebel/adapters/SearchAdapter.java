@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Search;
 import com.souqelebel.databinding.OfferRowBinding;
-import com.souqelebel.models.SingleProductDataModel;
+import com.souqelebel.models.ProductModel;
 
 import java.util.List;
 import java.util.Locale;
@@ -22,13 +22,13 @@ import io.paperdb.Paper;
 public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final String lang;
-    private List<SingleProductDataModel> list;
+    private List<ProductModel> list;
     private Context context;
     private LayoutInflater inflater;
     private Fragment fragment;
     private int i = -1;
 
-    public SearchAdapter(List<SingleProductDataModel> list, Context context, Fragment fragment) {
+    public SearchAdapter(List<ProductModel> list, Context context, Fragment fragment) {
         this.list = list;
         this.context = context;
         inflater = LayoutInflater.from(context);

@@ -17,12 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_product_details.ProductDetailsActivity;
-import com.souqelebel.adapters.FavouriteProduct_Adapter;
 import com.souqelebel.databinding.ActivityMyFavoriteBinding;
 import com.souqelebel.interfaces.Listeners;
 import com.souqelebel.language.Language;
 import com.souqelebel.models.FavouriteDataModel;
-import com.souqelebel.models.SingleProductDataModel;
+import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
 import com.souqelebel.remote.Api;
@@ -52,7 +51,6 @@ public class MyFavoriteActivity extends AppCompatActivity implements Listeners.B
     private boolean isFavoriteChange = false;
     private boolean isItemAdded = false;
     private List<FavouriteDataModel.FavouriteData> favouriteDataList;
-    private FavouriteProduct_Adapter favouriteProduct_adapter;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -82,8 +80,6 @@ public class MyFavoriteActivity extends AppCompatActivity implements Listeners.B
 
         manager = new GridLayoutManager(this, 1);
         binding.recView.setLayoutManager(manager);
-        favouriteProduct_adapter = new FavouriteProduct_Adapter(favouriteDataList, this);
-        binding.recView.setAdapter(favouriteProduct_adapter);
 //        binding.recView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 //            @Override
 //            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -128,7 +124,6 @@ public class MyFavoriteActivity extends AppCompatActivity implements Listeners.B
                                 favouriteDataList.clear();
                                 favouriteDataList.addAll(response.body().getData());
                                 if (favouriteDataList.size() > 0) {
-                                    favouriteProduct_adapter.notifyDataSetChanged();
                                     binding.tvNoData.setVisibility(View.GONE);
                                 } else {
                                     binding.tvNoData.setVisibility(View.VISIBLE);
@@ -374,14 +369,14 @@ public class MyFavoriteActivity extends AppCompatActivity implements Listeners.B
         finish();
     }
 
-    public void setItemDataOffers(SingleProductDataModel model) {
+    public void setItemDataOffers(ProductModel model) {
 
         Intent intent = new Intent(this, ProductDetailsActivity.class);
         intent.putExtra("product_id", model.getId());
         startActivityForResult(intent, 100);
     }
 
-    public void like_dislike(SingleProductDataModel productModel, int pos, int i) {
+    public void like_dislike(ProductModel productModel, int pos, int i) {
 
         try {
             Log.e("llll", userModel.getUser().getToken());
@@ -393,7 +388,6 @@ public class MyFavoriteActivity extends AppCompatActivity implements Listeners.B
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.isSuccessful()) {
                                 favouriteDataList.remove(pos);
-                                favouriteProduct_adapter.notifyItemRemoved(pos);
                             } else {
 
 

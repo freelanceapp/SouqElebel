@@ -28,7 +28,7 @@ import com.souqelebel.adapters.ProductDetialsSlidingImage_Adapter;
 import com.souqelebel.databinding.ActivityProductDetailsBinding;
 import com.souqelebel.interfaces.Listeners;
 import com.souqelebel.language.Language;
-import com.souqelebel.models.SingleProductDataModel;
+import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
 import com.souqelebel.remote.Api;
@@ -45,13 +45,13 @@ import retrofit2.Response;
 public class ProductDetailsActivity extends AppCompatActivity implements Listeners.BackListener , OnMapReadyCallback {
     private ActivityProductDetailsBinding binding;
     private String lang;
-    private SingleProductDataModel productDataModel;
+    private ProductModel productDataModel;
     private String product_id;
     private Preferences preferences;
     private UserModel userModel;
     private ProductDetialsSlidingImage_Adapter slidingImage__adapter;
     private CartSingleton cartSingleton;
-    private SingleProductDataModel singleProductDataModel;
+    private ProductModel productModel;
     private CartSingleton singleton;
     private double lat = 0.0, lng = 0.0;
     private GoogleMap mMap;
@@ -117,9 +117,9 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
         try {
             Api.getService(Tags.base_url)
                     .Product_detials(product_id)
-                    .enqueue(new Callback<SingleProductDataModel>() {
+                    .enqueue(new Callback<ProductModel>() {
                         @Override
-                        public void onResponse(Call<SingleProductDataModel> call, Response<SingleProductDataModel> response) {
+                        public void onResponse(Call<ProductModel> call, Response<ProductModel> response) {
                             dialog.dismiss();
                             if (response.isSuccessful() && response.body() != null) {
                                 UPDATEUI(response.body());
@@ -142,7 +142,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
                         }
 
                         @Override
-                        public void onFailure(Call<SingleProductDataModel> call, Throwable t) {
+                        public void onFailure(Call<ProductModel> call, Throwable t) {
                             try {
                                 dialog.dismiss();
                                 if (t.getMessage() != null) {
@@ -163,19 +163,16 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
         }
     }
 
-    private void UPDATEUI(SingleProductDataModel body) {
+    private void UPDATEUI(ProductModel body) {
 
         binding.setModel(body);
-        this.singleProductDataModel = body;
+        this.productModel = body;
         binding.progBarSlider.setVisibility(View.GONE);
-        slidingImage__adapter = new ProductDetialsSlidingImage_Adapter(this, body.getProducts_images());
-        binding.pager.setAdapter(slidingImage__adapter);
-        Log.e("eeee",singleProductDataModel.getLatitude()+"  ----"+singleProductDataModel.getLongitude());
-        if(mMap!=null){
-            Log.e("eeee",singleProductDataModel.getLatitude()+"  ----"+singleProductDataModel.getLongitude());
+       // slidingImage__adapter = new ProductDetialsSlidingImage_Adapter(this, body.getProducts_images());
+        //binding.pager.setAdapter(slidingImage__adapter);
 
-            AddMarker(singleProductDataModel.getLatitude(),singleProductDataModel.getLongitude());
-    }}
+
+    }
 
 
     @Override
@@ -191,7 +188,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
 
     public void show() {
         Intent intent = new Intent(this, ImagesActivity.class);
-        intent.putExtra("data", singleProductDataModel);
+        intent.putExtra("data", productModel);
         startActivityForResult(intent, 100);
     }
 
@@ -208,12 +205,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
             mMap.setTrafficEnabled(false);
             mMap.setBuildingsEnabled(false);
             mMap.setIndoorEnabled(true);
-        /*    Log.e("eeee",productDataModel.getLatitude()+"  ----"+productDataModel.getLongitude());
-            AddMarker(productDataModel.getLatitude(), productDataModel.getLongitude());
-*/
-            if(singleProductDataModel!=null){
-                AddMarker(singleProductDataModel.getLatitude(), singleProductDataModel.getLongitude());
-            }
+
 
         }
     }

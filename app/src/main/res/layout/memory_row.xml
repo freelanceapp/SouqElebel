@@ -6,7 +6,7 @@
 
         <variable
             name="model"
-            type="com.souqelebel.models.SingleProductDataModel.Sizes.Size" />
+            type="com.souqelebel.models.ProductModel" />
 
         <variable
             name="lang"

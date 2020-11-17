@@ -11,10 +11,10 @@ public class FavouriteDataModel implements Serializable {
     }
 
     public class FavouriteData implements Serializable {
-        private SingleProductDataModel product;
+        private ProductModel product;
         private User user;
 
-        public SingleProductDataModel getProduct() {
+        public ProductModel getProduct() {
             return product;
         }
 

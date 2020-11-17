@@ -17,7 +17,7 @@
 
         <variable
             name="model"
-            type="com.souqelebel.models.SingleProductDataModel" />
+            type="com.souqelebel.models.ProductModel" />
 
         <variable
             name="cartcount"
@@ -64,7 +64,7 @@
                     android:padding="8dp"
                     android:rotation='@{lang.equals("ar")?180:0}'
                     android:src="@drawable/ic_left_arrow"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
 
                     />
 
@@ -144,14 +144,11 @@
                                         android:layout_marginTop="3dp"
                                         android:layout_marginLeft="5dp"
                                         android:orientation="vertical"
-                                        android:visibility='@{model.have_offer.equals("yes")?View.VISIBLE:View.INVISIBLE,default=invisible}'
                                         >
 
                                         <TextView
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text='@{model.offer_type.equals("per")?model.offer_value+"%":model.offer_value+@string/sar}'
-                                            android:textColor="@color/white"
                                             android:textSize="13sp" />
                                     </LinearLayout>
 
@@ -188,10 +185,8 @@
                                 android:ellipsize="end"
                                 android:maxLines="2"
                                 android:singleLine="true"
-                                android:text='@{model.old_price+@string/sar}'
                                 android:textColor="@color/gray6"
                                 android:textSize="13sp"
-                                android:visibility='@{model.have_offer.equals("yes")?View.VISIBLE:View.INVISIBLE,default=invisible}'
 
                                 />
 
@@ -215,7 +210,6 @@
                             android:layout_marginTop="30dp"
                             android:padding="5dp"
                             android:src="@drawable/ic_pin3"
-                            android:tint="@color/colorPrimary"
                             app:layout_constraintStart_toStartOf="@id/ll"
                             app:layout_constraintTop_toBottomOf="@id/ll" />
 

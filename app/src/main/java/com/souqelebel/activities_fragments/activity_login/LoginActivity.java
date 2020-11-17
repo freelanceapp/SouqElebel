@@ -78,7 +78,6 @@ public class LoginActivity extends AppCompatActivity implements Listeners.LoginL
         singleton = CartSingleton.newInstance();
         countryModelList = new ArrayList<>(Arrays.asList(countries));
         loginModel = new LoginModel();
-        binding.iconCall.setCardBackgroundColor(R.color.white);
         binding.setLoginModel(loginModel);
         binding.setListener(this);
         Paper.init(this);

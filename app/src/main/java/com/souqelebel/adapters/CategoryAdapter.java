@@ -1,33 +1,43 @@
 package com.souqelebel.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Main;
 import com.souqelebel.databinding.MainCategoryRowBinding;
-import com.souqelebel.models.MainCategoryDataModel;
+import com.souqelebel.models.MainCategoryModel;
+import com.souqelebel.tags.Tags;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<MainCategoryDataModel.Data> list;
+    private List<MainCategoryModel> list;
     private Context context;
     private LayoutInflater inflater;
     private Fragment_Main fragment_main;
-    public CategoryAdapter(List<MainCategoryDataModel.Data> list,Fragment_Main fragment_main, Context context) {
+    private int selectedPos = 0;
+    private int oldPos = 0;
+
+    public CategoryAdapter(List<MainCategoryModel> list, Fragment_Main fragment_main, Context context) {
         this.list = list;
         this.context = context;
         inflater = LayoutInflater.from(context);
-        this.fragment_main=fragment_main;
+        this.fragment_main = fragment_main;
 
 
     }
@@ -47,12 +57,34 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         MyHolder myHolder = (MyHolder) holder;
-       myHolder.binding.setModel(list.get(position));
+        myHolder.binding.setModel(list.get(position));
+        MainCategoryModel mainCategoryModel = list.get(position);
+        if (mainCategoryModel.isSelected()){
+            myHolder.binding.image.setBorderColor(ContextCompat.getColor(context,R.color.colorPrimary));
+            myHolder.binding.tvName.setTextColor(ContextCompat.getColor(context,R.color.colorPrimary));
+        }else {
+            myHolder.binding.image.setBorderColor(ContextCompat.getColor(context,R.color.white));
+            myHolder.binding.tvName.setTextColor(ContextCompat.getColor(context,R.color.gray4));
 
+        }
         myHolder.itemView.setOnClickListener(view -> {
-            Log.e("sssss",list.get(holder.getLayoutPosition()).getId()+"");
+            MainCategoryModel model = list.get(myHolder.getAdapterPosition());
+            fragment_main.setItemData(model);
 
-            fragment_main.setitemData(list.get(holder.getLayoutPosition()).getId()+"");
+            MainCategoryModel model1 = list.get(oldPos);
+            model1.setSelected(false);
+            list.set(oldPos,model1);
+            notifyItemChanged(oldPos);
+
+
+
+            selectedPos = myHolder.getAdapterPosition();
+            MainCategoryModel model2 = list.get(selectedPos);
+            model2.setSelected(true);
+            list.set(selectedPos,model2);
+            notifyItemChanged(selectedPos);
+            oldPos = selectedPos;
+
         });
     }
 
@@ -70,8 +102,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         }
     }
-
-
 
 
 }

@@ -1,6 +1,7 @@
 package com.souqelebel.ui_general_method;
 
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;

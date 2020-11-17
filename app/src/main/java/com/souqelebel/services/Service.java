@@ -6,16 +6,15 @@ import com.souqelebel.models.BankDataModel;
 import com.souqelebel.models.CategoryProductDataModel;
 import com.souqelebel.models.Create_Order_Model;
 import com.souqelebel.models.FavouriteDataModel;
+import com.souqelebel.models.MainCategoryDataModel;
 import com.souqelebel.models.NotificationCount;
 import com.souqelebel.models.NotificationDataModel;
 import com.souqelebel.models.OrderDataModel;
 import com.souqelebel.models.OrderModel;
-import com.souqelebel.models.ProductDataModel;
-import com.souqelebel.models.MainCategoryDataModel;
 import com.souqelebel.models.PlaceGeocodeData;
 import com.souqelebel.models.PlaceMapDetailsData;
+import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.SettingModel;
-import com.souqelebel.models.SingleProductDataModel;
 import com.souqelebel.models.Slider_Model;
 import com.souqelebel.models.UserModel;
 
@@ -103,7 +102,7 @@ public interface Service {
     Call<Slider_Model> get_slider();
 
 
-    @GET("api/offers")
+   /* @GET("api/offers")
     Call<ProductDataModel> Search(@Query("pagination") String pagination,
                                   @Query("user_id") int user_id);
 
@@ -133,15 +132,15 @@ public interface Service {
                                              @Query("departemnt_id") String departemnt_id,
                                              @Query("user_id") String user_id,
                                              @Query("page") int page
-    );
+    );*/
 
     @GET("api/product")
-    Call<SingleProductDataModel> Product_detials(@Query("product_id") String product_id);
+    Call<ProductModel> Product_detials(@Query("product_id") String product_id);
 
     @GET("api/one-order")
     Call<OrderModel> order_detials(@Query("order_id") int order_id);
 
-    @GET("api/brands")
+   /* @GET("api/brands")
     Call<MainCategoryDataModel> getBrands(
             @Query("pagination") String pagination
     );
@@ -149,7 +148,7 @@ public interface Service {
     @GET("api/category")
     Call<MainCategoryDataModel> getCategory(
             @Query("pagination") String pagination
-    );
+    );*/
 
     @GET("api/banks")
     Call<BankDataModel> getBanks();
@@ -242,4 +241,8 @@ public interface Service {
     Call<ResponseBody> accept_orders(
             @Header("Authorization") String Authorization,
             @Body Create_Order_Model create_order_model);
+
+
+    @GET("api/category-product")
+    Call<MainCategoryDataModel> getMainCategory_Products();
 }

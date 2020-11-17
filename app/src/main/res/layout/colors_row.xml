@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.souqelebel.models.SingleProductDataModel.Sizes.Colors" />
+            type="com.souqelebel.models.ProductModel" />
 
         <import type="android.view.View" />
     </data>

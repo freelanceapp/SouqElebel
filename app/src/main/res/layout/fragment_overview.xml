@@ -16,7 +16,7 @@
 
         <variable
             name="model"
-            type="com.souqelebel.models.SingleProductDataModel" />
+            type="com.souqelebel.models.ProductModel" />
     </data>
 
 
@@ -49,7 +49,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
-                android:text='@{model.features}'
                 android:textColor="@color/gray6"
                 android:textSize="14sp"
                 android:textStyle="bold" />

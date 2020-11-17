@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Main;
 import com.souqelebel.databinding.OfferRowBinding;
-import com.souqelebel.models.SingleProductDataModel;
+import com.souqelebel.models.ProductModel;
 import com.souqelebel.singleton.CartSingleton;
 
 
@@ -23,7 +23,7 @@ import io.paperdb.Paper;
 
 public class CategoryProduct_Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<SingleProductDataModel> list;
+    private List<ProductModel> list;
     private Context context;
     private LayoutInflater inflater;
     private String lang;
@@ -31,7 +31,7 @@ public class CategoryProduct_Adapter extends RecyclerView.Adapter<RecyclerView.V
     private Fragment fragment;
     private CartSingleton cartSingleton;
 
-    public CategoryProduct_Adapter(List<SingleProductDataModel> list, Context context, Fragment fragment) {
+    public CategoryProduct_Adapter(List<ProductModel> list, Context context, Fragment fragment) {
         this.list = list;
         this.context = context;
         inflater = LayoutInflater.from(context);

@@ -19,7 +19,7 @@ public class CategoryProductDataModel implements Serializable {
         private String icon;
         private String parent;
         private int level;
-        private List<SingleProductDataModel> products;
+        private List<ProductModel> products;
 
         public int getId() {
             return id;
@@ -49,7 +49,7 @@ public class CategoryProductDataModel implements Serializable {
             return level;
         }
 
-        public List<SingleProductDataModel> getProducts() {
+        public List<ProductModel> getProducts() {
             return products;
         }
     }
