@@ -227,5 +227,14 @@
     <string name="adviersment_photos">صور الإعلان</string>
     <string name="my_advertisements">إعلاناتي</string>
     <string name="not_av">غير متوفر الان</string>
+    <string name="add_ads">إضافة إعلان</string>
+    <string name="upload_ad_video"><![CDATA[فيديو الاعلان <font color="#bababa">لايزيد عن 59 ثانية</font>]]></string>
+    <string name="upload_video">تحميل فيديو</string>
+    <string name="ad_price">سعر الإعلان</string>
+    <string name="ad_details">تفاصيل الإعلان</string>
+    <string name="max_ad_photo">حد اقصى 2 صورة</string>
+    <string name="choose_category">إختر القسم</string>
+    <string name="vid_pem_denied">الوصول للفيديو غير متاح</string>
+
 
 </resources>

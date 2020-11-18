@@ -2,6 +2,7 @@
     <string name="app_name">Souq Elebel</string>
     <string name="map_api_key">AIzaSyAeyMUJgKAhnNXbILHONb1um72CNzELFRY</string>
     <string name="map_key">AIzaSyAeyMUJgKAhnNXbILHONb1um72CNzELFRY</string>
+
     <string name="open">open</string>
     <string name="close">close</string>
 
@@ -222,5 +223,13 @@
     <string name="adviersment_photos">Ads Photos</string>
     <string name="my_advertisements">My Ads</string>
     <string name="not_av">Not available</string>
+    <string name="add_ads">Add Ads</string>
+    <string name="upload_ad_video"><![CDATA[Upload Ad Video <font color="#bababa">(59 seconds)</font>]]></string>
+    <string name="upload_video">Upload Video</string>
+    <string name="ad_price">Ad Price</string>
+    <string name="ad_details">Ad details</string>
+    <string name="max_ad_photo">Maximum 2 ad photos</string>
+    <string name="choose_category">Choose category</string>
+    <string name="vid_pem_denied">Video Permission Denied</string>
 
 </resources>

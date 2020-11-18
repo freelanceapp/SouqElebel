@@ -145,6 +145,8 @@ public class HomeActivity extends AppCompatActivity {
 
         }
         binding.fab.setOnClickListener(view -> {
+            Intent intent = new Intent(this,com.souqelebel.activities_fragments.activity_add_ads.AddAdsActivity.class);
+            startActivity(intent);
         });
 
     }
