@@ -48,6 +48,7 @@ public class VerificationCodeActivity extends AppCompatActivity {
     private String verificationId;
     private String smsCode;
     private Preferences preferences;
+    private boolean canSend = false;
 
 
     @Override
@@ -82,7 +83,11 @@ public class VerificationCodeActivity extends AppCompatActivity {
         lang = Paper.book().read("lang", "ar");
         String phone = phone_code+this.phone;
         binding.setPhone(phone);
-        binding.tvResendCode.setOnClickListener(view -> sendSmsCode());
+        binding.tvResendCode.setOnClickListener(view -> {
+            if (canSend){
+                sendSmsCode();
+            }
+        });
         binding.btnConfirm.setOnClickListener(view -> {
             String code = binding.edtCode.getText().toString().trim();
             if (!code.isEmpty()) {
@@ -132,7 +137,7 @@ public class VerificationCodeActivity extends AppCompatActivity {
         PhoneAuthProvider.getInstance()
                 .verifyPhoneNumber(
                         phone_code + phone,
-                        60,
+                        120,
                         TimeUnit.SECONDS,
                         this,
                         mCallBack
@@ -143,8 +148,9 @@ public class VerificationCodeActivity extends AppCompatActivity {
     }
 
     private void startTimer() {
+        canSend = false;
         binding.tvResendCode.setEnabled(false);
-        timer = new CountDownTimer(60 * 1000, 1000) {
+        timer = new CountDownTimer(120 * 1000, 1000) {
             @Override
             public void onTick(long l) {
                 SimpleDateFormat format = new SimpleDateFormat("mm:ss", Locale.ENGLISH);
@@ -154,6 +160,7 @@ public class VerificationCodeActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+                canSend = true;
                 binding.tvTimer.setText("00:00");
                 binding.tvResendCode.setEnabled(true);
             }
@@ -166,7 +173,6 @@ public class VerificationCodeActivity extends AppCompatActivity {
     private void checkValidCode(String code) {
 
         if (verificationId != null) {
-            Log.e("1", "1");
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
             mAuth.signInWithCredential(credential)
                     .addOnSuccessListener(authResult -> {
@@ -178,9 +184,6 @@ public class VerificationCodeActivity extends AppCompatActivity {
                     Toast.makeText(this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
                 }
             });
-        } else {
-            Log.e("2", "2");
-            login();
         }
 
     }
@@ -197,12 +200,9 @@ public class VerificationCodeActivity extends AppCompatActivity {
                     public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                         dialog.dismiss();
                         if (response.isSuccessful() && response.body() != null) {
-                            Log.e("eeeeee", response.body().getUser().getName());
                             preferences.create_update_userdata(VerificationCodeActivity.this, response.body());
                             navigateToHomeActivity();
                         } else {
-                            Log.e("mmmmmmmmmm", phone_code + phone);
-
 
                             if (response.code() == 500) {
                                 Toast.makeText(VerificationCodeActivity.this, "Server Error", Toast.LENGTH_SHORT).show();

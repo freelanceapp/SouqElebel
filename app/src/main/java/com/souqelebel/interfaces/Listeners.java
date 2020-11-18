@@ -27,16 +27,16 @@ public interface Listeners {
     interface SettingActions {
 
         void terms();
-        void aboutApp();
         void share();
-        void onEditProfile();
         void onLanguageSetting();
         void onPrivacy();
         void onRate();
         void onTone();
         void about();
         void logout();
-        void bepartener();
+        void onFacebook();
+        void onInstagram();
+        void onTwitter();
 
     }
 
@@ -61,7 +61,15 @@ public interface Listeners {
     }
 
     interface UpdateProfileListener {
-        void updateProfile();
+        void openSheet();
+
+        void closeSheet();
+
+        void checkDataValid();
+
+        void checkReadPermission();
+
+        void checkCameraPermission();
     }
 
 

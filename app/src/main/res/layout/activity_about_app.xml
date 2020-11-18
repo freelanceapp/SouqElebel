@@ -37,7 +37,7 @@
             <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/second"
+                android:background="@color/white"
                 app:contentInsetEnd="0dp"
                 app:contentInsetLeft="0dp"
                 app:contentInsetRight="0dp"
@@ -64,7 +64,7 @@
                         android:padding="8dp"
                         android:rotation='@{lang.equals("ar")?180:0}'
                         android:src="@drawable/ic_left_arrow"
-                        app:tint="@color/white"
+                        app:tint="@color/black"
 
                         />
 
@@ -78,7 +78,7 @@
                         android:clickable="false"
                         android:longClickable="false"
                         android:text="@{title}"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textSize="15sp" />
                 </LinearLayout>
             </androidx.appcompat.widget.Toolbar>

@@ -1,45 +1,31 @@
 package com.souqelebel.activities_fragments.activity_home;
 
-import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.souqelebel.R;
-import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_My_Reservations;
-import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Search;
+import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Favorite;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Main;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Settings;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Profile;
 import com.souqelebel.activities_fragments.activity_login.LoginActivity;
 import com.souqelebel.activities_fragments.activity_notification.NotificationActivity;
+import com.souqelebel.activities_fragments.activity_search.SearchActivity;
 import com.souqelebel.databinding.ActivityHomeBinding;
 import com.souqelebel.language.Language;
 import com.souqelebel.models.NotFireModel;
@@ -48,7 +34,6 @@ import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
 import com.souqelebel.remote.Api;
 import com.souqelebel.share.Common;
-import com.souqelebel.singleton.CartSingleton;
 import com.souqelebel.tags.Tags;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -59,7 +44,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 
 import io.paperdb.Paper;
 import okhttp3.ResponseBody;
@@ -72,15 +56,12 @@ public class HomeActivity extends AppCompatActivity {
     private Preferences preferences;
     private FragmentManager fragmentManager;
     private Fragment_Main fragment_main;
-    private Fragment_My_Reservations fragment_familyBox;
     private Fragment_Profile fragment_profile;
     private Fragment_Settings fragment_settings;
-    private Fragment_Search fragment_search;
+    private Fragment_Favorite fragment_favorite;
     private UserModel userModel;
     private String lang;
     private String token;
-    private CartSingleton singleton;
-    private int back = 0;
 
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
@@ -120,25 +101,35 @@ public class HomeActivity extends AppCompatActivity {
 
         });
 
+        binding.search.setOnClickListener(view -> {
+            Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
+            startActivity(intent);
+
+        });
+
+
+
         binding.flHome.setOnClickListener(v -> {
             displayFragmentMain();
         });
 
-        binding.flSearch.setOnClickListener(v -> {
-            displayFragmentSearch();
+        binding.flFavorite.setOnClickListener(v -> {
+            if (userModel!=null){
+                displayFragmentFavorite();
+
+            }else {
+                Common.CreateDialogAlert(this,getString(R.string.please_sign_in_or_sign_up));
+            }
         });
 
-//        binding.flMyReservations.setOnClickListener(v -> {
-//            if (userModel != null) {
-//                displayFragmentMyReservations();
-//            } else {
-//                Common.CreateDialogAlert(this, getResources().getString(R.string.please_sign_in_or_sign_up));
-//            }
-//        });
 
         binding.flProfile.setOnClickListener(v -> {
+            if (userModel!=null){
+                displayFragmentProfile();
 
-            displayFragmentProfile();
+            }else {
+                Common.CreateDialogAlert(this,getString(R.string.please_sign_in_or_sign_up));
+            }
         });
 
         binding.flSettings.setOnClickListener(v -> {
@@ -153,12 +144,7 @@ public class HomeActivity extends AppCompatActivity {
             updateTokenFireBase();
 
         }
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                YoYo.with(Techniques.BounceInDown).duration(10).playOn(binding.fab);
-                displayFragmentMyReservations();
-            }
+        binding.fab.setOnClickListener(view -> {
         });
 
     }
@@ -212,18 +198,15 @@ public class HomeActivity extends AppCompatActivity {
 
     public void displayFragmentMain() {
         try {
-            Log.e("ddd", "fff");
             updateHomUi();
             if (fragment_main == null) {
                 fragment_main = Fragment_Main.newInstance();
             }
 
 
-            if (fragment_familyBox != null && fragment_familyBox.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_familyBox).commit();
-            }
-            if (fragment_search != null && fragment_search.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_search).commit();
+
+            if (fragment_favorite != null && fragment_favorite.isAdded()) {
+                fragmentManager.beginTransaction().hide(fragment_favorite).commit();
             }
             if (fragment_profile != null && fragment_profile.isAdded()) {
                 fragmentManager.beginTransaction().hide(fragment_profile).commit();
@@ -236,7 +219,7 @@ public class HomeActivity extends AppCompatActivity {
                 fragmentManager.beginTransaction().show(fragment_main).commit();
 
             } else {
-                fragmentManager.beginTransaction().add(R.id.fragment_app_container, fragment_main, "fragment_main").addToBackStack("fragment_main").commit();
+                fragmentManager.beginTransaction().add(R.id.fragment_app_container, fragment_main, "fragment_main").commit();
 
             }
             binding.setTitle(getString(R.string.home));
@@ -245,12 +228,12 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    public void displayFragmentSearch() {
+    public void displayFragmentFavorite() {
 
         try {
-            updateDepartmentsUi();
-            if (fragment_search == null) {
-                fragment_search = Fragment_Search.newInstance();
+            updateFavoriteUi();
+            if (fragment_favorite == null) {
+                fragment_favorite = Fragment_Favorite.newInstance();
             }
 
 
@@ -265,15 +248,12 @@ public class HomeActivity extends AppCompatActivity {
                 fragmentManager.beginTransaction().hide(fragment_profile).commit();
             }
 
-            if (fragment_familyBox != null && fragment_familyBox.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_familyBox).commit();
-            }
 
-            if (fragment_search.isAdded()) {
-                fragmentManager.beginTransaction().show(fragment_search).commit();
+            if (fragment_favorite.isAdded()) {
+                fragmentManager.beginTransaction().show(fragment_favorite).commit();
 
             } else {
-                fragmentManager.beginTransaction().add(R.id.fragment_app_container, fragment_search, "fragment_department").addToBackStack("fragment_department").commit();
+                fragmentManager.beginTransaction().add(R.id.fragment_app_container, fragment_favorite, "fragment_favorite").commit();
 
             }
             binding.setTitle(getString(R.string.department));
@@ -281,42 +261,11 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void displayFragmentMyReservations() {
-        try {
-            updateFamilyBoxUi();
-            if (fragment_familyBox == null) {
-                fragment_familyBox = Fragment_My_Reservations.newInstance();
-            }
-
-            if (fragment_settings != null && fragment_settings.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_settings).commit();
-            }
-            if (fragment_search != null && fragment_search.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_search).commit();
-            }
-            if (fragment_main != null && fragment_main.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_main).commit();
-            }
-
-            if (fragment_profile != null && fragment_profile.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_profile).commit();
-            }
-            if (fragment_familyBox.isAdded()) {
-                fragmentManager.beginTransaction().show(fragment_familyBox).commit();
-            } else {
-                fragmentManager.beginTransaction().add(R.id.fragment_app_container, fragment_familyBox, "fragment_family_box").addToBackStack("fragment_family_box").commit();
-
-            }
-            binding.setTitle(getString(R.string.cart));
-        } catch (Exception e) {
-        }
-
-    }
 
     public void displayFragmentProfile() {
 
         try {
-            updateOrderUi();
+            updateProfileUi();
             if (fragment_profile == null) {
                 fragment_profile = Fragment_Profile.newInstance();
             }
@@ -325,26 +274,24 @@ public class HomeActivity extends AppCompatActivity {
             if (fragment_main != null && fragment_main.isAdded()) {
                 fragmentManager.beginTransaction().hide(fragment_main).commit();
             }
-            if (fragment_search != null && fragment_search.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_search).commit();
+            if (fragment_favorite != null && fragment_favorite.isAdded()) {
+                fragmentManager.beginTransaction().hide(fragment_favorite).commit();
             }
 
             if (fragment_settings != null && fragment_settings.isAdded()) {
                 fragmentManager.beginTransaction().hide(fragment_settings).commit();
             }
 
-            if (fragment_familyBox != null && fragment_familyBox.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_familyBox).commit();
-            }
+
 
             if (fragment_profile.isAdded()) {
                 fragmentManager.beginTransaction().show(fragment_profile).commit();
 
             } else {
-                fragmentManager.beginTransaction().add(R.id.fragment_app_container, fragment_profile, "fragment_order").addToBackStack("fragment_order").commit();
+                fragmentManager.beginTransaction().add(R.id.fragment_app_container, fragment_profile, "fragment_profile").commit();
 
             }
-            binding.setTitle(getString(R.string.offers));
+            binding.setTitle(getString(R.string.profile));
         } catch (Exception e) {
         }
     }
@@ -352,7 +299,7 @@ public class HomeActivity extends AppCompatActivity {
     public void displayFragmentSettings() {
 
         try {
-            updateProfileUi();
+            updateSettingUi();
             if (fragment_settings == null) {
                 fragment_settings = Fragment_Settings.newInstance();
             }
@@ -361,17 +308,15 @@ public class HomeActivity extends AppCompatActivity {
             if (fragment_main != null && fragment_main.isAdded()) {
                 fragmentManager.beginTransaction().hide(fragment_main).commit();
             }
-            if (fragment_search != null && fragment_search.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_search).commit();
+            if (fragment_favorite != null && fragment_favorite.isAdded()) {
+                fragmentManager.beginTransaction().hide(fragment_favorite).commit();
             }
 
             if (fragment_profile != null && fragment_profile.isAdded()) {
                 fragmentManager.beginTransaction().hide(fragment_profile).commit();
             }
 
-            if (fragment_familyBox != null && fragment_familyBox.isAdded()) {
-                fragmentManager.beginTransaction().hide(fragment_familyBox).commit();
-            }
+
 
             if (fragment_settings.isAdded()) {
                 fragmentManager.beginTransaction().show(fragment_settings).commit();
@@ -387,11 +332,8 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private void updateHomUi() {
-        if (fragment_familyBox != null && fragment_familyBox.isVisible()) {
-            YoYo.with(Techniques.BounceInUp).duration(10).playOn(binding.ll);
-            binding.fab.setVisibility(View.VISIBLE);
-        }
-        binding.flSearch.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+
+        binding.flFavorite.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.white));
         binding.tvSearch.setVisibility(View.GONE);
@@ -400,11 +342,6 @@ public class HomeActivity extends AppCompatActivity {
         binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
         binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
         binding.tvHome.setVisibility(View.VISIBLE);
-//
-//        binding.flMyReservations.setBackgroundResource(0);
-//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setVisibility(View.GONE);
 
         binding.flProfile.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.white));
@@ -415,16 +352,13 @@ public class HomeActivity extends AppCompatActivity {
         binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.white));
         binding.tvSettings.setVisibility(View.GONE);
-        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconReservations.setVisibility(View.GONE);
+
+
     }
 
-    private void updateDepartmentsUi() {
-        if (fragment_familyBox != null && fragment_familyBox.isVisible()) {
-            YoYo.with(Techniques.BounceInUp).duration(10).playOn(binding.ll);
-            binding.fab.setVisibility(View.VISIBLE);
-        }
-        binding.flSearch.setBackgroundResource(0);
+    private void updateFavoriteUi() {
+
+        binding.flFavorite.setBackgroundResource(0);
         binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
         binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
         binding.tvSearch.setVisibility(View.VISIBLE);
@@ -434,42 +368,7 @@ public class HomeActivity extends AppCompatActivity {
         binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.white));
         binding.tvHome.setVisibility(View.GONE);
 
-//        binding.flMyReservations.setBackgroundResource(0);
-//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setVisibility(View.GONE);
 
-        binding.flProfile.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.white));
-        binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.tvProfile.setVisibility(View.GONE);
-
-        binding.flSettings.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.white));
-        binding.tvSettings.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.tvSettings.setVisibility(View.GONE);
-        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconReservations.setVisibility(View.GONE);
-    }
-
-    @SuppressLint("ResourceAsColor")
-    private void updateFamilyBoxUi() {
-        binding.flHome.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.white));
-        binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.tvHome.setVisibility(View.GONE);
-        binding.fab.setVisibility(View.GONE);
-        binding.flSearch.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.white));
-        binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.white));
-        binding.tvSearch.setVisibility(View.GONE);
-
-//        binding.flMyReservations.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setVisibility(View.VISIBLE);
-        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_white);
-        binding.iconReservations.setVisibility(View.VISIBLE);
         binding.flProfile.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconProfile.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvProfile.setTextColor(ContextCompat.getColor(this, R.color.white));
@@ -482,27 +381,20 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    private void updateOrderUi() {
-        if (fragment_familyBox != null && fragment_familyBox.isVisible()) {
-            YoYo.with(Techniques.BounceInUp).duration(10).playOn(binding.ll);
-            binding.fab.setVisibility(View.VISIBLE);
-        }
+
+
+    private void updateProfileUi() {
+
         binding.flHome.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.white));
         binding.tvHome.setVisibility(View.GONE);
-        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconReservations.setVisibility(View.GONE);
-        binding.flSearch.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+
+
+        binding.flFavorite.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.white));
         binding.tvSearch.setVisibility(View.GONE);
-
-
-//        binding.flMyReservations.setBackgroundResource(0);
-//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setVisibility(View.GONE);
 
         binding.flSettings.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.white));
@@ -516,27 +408,19 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    private void updateProfileUi() {
-        if (fragment_familyBox != null && fragment_familyBox.isVisible()) {
-            YoYo.with(Techniques.BounceInUp).duration(10).playOn(binding.ll);
-            binding.fab.setVisibility(View.VISIBLE);
-        }
+    private void updateSettingUi() {
+
         binding.flHome.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconHome.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvHome.setTextColor(ContextCompat.getColor(this, R.color.white));
         binding.tvHome.setVisibility(View.GONE);
-        binding.ll.setBackgroundResource(R.drawable.small_rounded_btn_primary);
-        binding.iconReservations.setVisibility(View.GONE);
-        binding.flSearch.setBackgroundResource(R.drawable.small_rounded_btn_primary);
+
+
+        binding.flFavorite.setBackgroundResource(R.drawable.small_rounded_btn_primary);
         binding.iconSearch.setColorFilter(ContextCompat.getColor(this, R.color.white));
         binding.tvSearch.setTextColor(ContextCompat.getColor(this, R.color.white));
         binding.tvSearch.setVisibility(View.GONE);
 
-
-//        binding.flMyReservations.setBackgroundResource(0);
-//        binding.iconReservations.setColorFilter(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setTextColor(ContextCompat.getColor(this, R.color.white));
-//        binding.tvReservations.setVisibility(View.GONE);
 
         binding.flSettings.setBackgroundResource(0);
         binding.iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
@@ -703,73 +587,8 @@ public class HomeActivity extends AppCompatActivity {
 
         if (fragment_main != null && fragment_main.isAdded() && fragment_main.isVisible()) {
             if (userModel != null) {
-                if (singleton.getItemCartModelList() != null && singleton.getItemCartModelList().size() > 0) {
-                    if (back == 0) {
-                        back = 1;
-                        String sound_Path = "android.resource://" + getPackageName() + "/" + R.raw.not;
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                            String CHANNEL_ID = "my_channel_02";
-                            CharSequence CHANNEL_NAME = "my_channel_name";
-                            int IMPORTANCE = NotificationManager.IMPORTANCE_HIGH;
-
-                            final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-                            final NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, IMPORTANCE);
-                            channel.setShowBadge(true);
-                            channel.setSound(Uri.parse(sound_Path), new AudioAttributes.Builder()
-                                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
-                                    .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
-                                    .build()
-                            );
-
-                            builder.setChannelId(CHANNEL_ID);
-                            builder.setSound(Uri.parse(sound_Path), AudioManager.STREAM_NOTIFICATION);
-                            builder.setSmallIcon(R.drawable.logo);
-
-
-                            builder.setContentTitle(getResources().getString(R.string.cart));
-
-
-                            builder.setContentText(getResources().getString(R.string.cart_not_empty));
-
-
-                            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-                            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-                            builder.setLargeIcon(bitmap);
-                            manager.createNotificationChannel(channel);
-                            manager.notify(new Random().nextInt(200), builder.build());
-                        } else {
-
-                            final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-
-                            builder.setSound(Uri.parse(sound_Path), AudioManager.STREAM_NOTIFICATION);
-                            builder.setSmallIcon(R.drawable.logo);
-
-                            builder.setContentTitle(getResources().getString(R.string.cart));
-
-
-                            builder.setContentText(getResources().getString(R.string.cart_not_empty));
-
-
-                            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-                            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-                            builder.setLargeIcon(bitmap);
-                            manager.notify(new Random().nextInt(200), builder.build());
-
-                        }
-                    } else {
-                        // back=1;
-                        CreatecloseDialog();
-
-                    }
-                } else {
-                    finish();
-                }
-            } else {
+                finish();
+            }else {
                 navigateToSignInActivity();
             }
         } else {
@@ -777,44 +596,6 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void CreatecloseDialog() {
-
-        final androidx.appcompat.app.AlertDialog dialog = new AlertDialog.Builder(this)
-                .setCancelable(true)
-                .create();
-
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_delete, null);
-        TextView tvDelete = view.findViewById(R.id.tvDelete);
-        TextView tvCancel = view.findViewById(R.id.tvCancel);
-        TextView tvtitle = view.findViewById(R.id.tvtitle);
-        TextView tvcart = view.findViewById(R.id.tvcart);
-
-        tvDelete.setText(getResources().getString(R.string.back));
-        tvcart.setText(getResources().getString(R.string.cart));
-        tvtitle.setText(getResources().getString(R.string.if_you));
-        tvCancel.setOnClickListener(v -> {
-            back = 0;
-            dialog.dismiss();
-
-        });
-
-        tvDelete.setOnClickListener(v -> {
-            try {
-                dialog.dismiss();
-                finish();
-            } catch (Exception e) {
-            }
-
-            dialog.dismiss();
-        });
-
-        dialog.getWindow().getAttributes().windowAnimations = R.style.dialog_congratulation_animation;
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_window_bg);
-        dialog.setView(view);
-        dialog.show();
-
-    }
 
     private void navigateToSignInActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
@@ -839,9 +620,7 @@ public class HomeActivity extends AppCompatActivity {
         for (Fragment fragment : fragmentList) {
             fragment.onActivityResult(requestCode, resultCode, data);
         }
-        if (requestCode == 100) {
-            displayFragmentMyReservations();
-        }
+
 
     }
 
@@ -855,18 +634,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    public void updateCartCount(int count) {
-        binding.setCartcount(count);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        singleton = CartSingleton.newInstance();
-        if (singleton.getItemCartModelList() != null) {
-            updateCartCount(singleton.getItemCount());
-        }
 
-    }
 
 }

@@ -103,31 +103,14 @@ public class LanguageActivity extends AppCompatActivity {
 
         binding.btnConfirm.setOnClickListener(v -> {
             if (canSelect) {
-//                Paper.book().write("lang",selectedLang);
-//                Language_Helper.updateResources(this,selectedLang);
-//                setResult(RESULT_OK);
-//                finish();
-                RefreshActivity(selectedLang);
+                Intent intent = getIntent();
+                intent.putExtra("lang",selectedLang);
+                setResult(RESULT_OK,intent);
+                finish();
             }
         });
     }
 
-    public void RefreshActivity(String lang) {
-        Paper.book().write("lang", lang);
-        Language.setNewLocale(this, lang);
-        new Handler()
-                .postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        Intent intent = new Intent(com.souqelebel.activities_fragments.activity_language.LanguageActivity.this, HomeActivity.class);
-                        finishAffinity();
-                        startActivity(intent);
-                    }
-                }, 1050);
-
-
-    }
 
     private void updateBtnUi() {
         if (canSelect) {

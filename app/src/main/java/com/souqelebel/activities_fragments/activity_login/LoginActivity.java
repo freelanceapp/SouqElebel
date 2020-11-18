@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity implements Listeners.LoginL
     private CountriesAdapter countriesAdapter;
     private AlertDialog dialog;
     private String lang;
-    private String phone_code = "+966";
+    private String phone_code = "+20";
     private CartSingleton singleton;
     private int back = 0;
 
@@ -163,8 +163,6 @@ public class LoginActivity extends AppCompatActivity implements Listeners.LoginL
         dialog.dismiss();
         phone_code = countryModel.getDialCode();
         binding.image.setImageResource(countryModel.getFlag());
-      //  Picasso.get().load(getResources().getDrawable(countryModel.getFlag())).into(binding.image);
-       // binding.tvCode.setText(countryModel.getDialCode());
     }
 
     @Override

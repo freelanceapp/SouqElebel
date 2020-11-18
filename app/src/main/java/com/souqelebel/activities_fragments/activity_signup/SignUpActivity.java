@@ -53,7 +53,6 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.souqelebel.R;
-import com.souqelebel.activities_fragments.activity_bepartener.BePartenerActivity;
 import com.souqelebel.activities_fragments.activity_home.HomeActivity;
 import com.souqelebel.databinding.ActivitySignUpBinding;
 import com.souqelebel.interfaces.Listeners;
@@ -81,7 +80,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SignUpActivity extends AppCompatActivity implements Listeners.SignUpListener, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class SignUpActivity extends AppCompatActivity implements Listeners.SignUpListener {
     private ActivitySignUpBinding binding;
     private final String READ_PERM = Manifest.permission.READ_EXTERNAL_STORAGE;
     private final String write_permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -92,17 +91,7 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
     private Preferences preferences;
     private String phone;
     private String phone_code;
-    private double lat, lng;
-    private Marker marker;
-    private GoogleMap mMap;
-    private float zoom = 6;
-    private GoogleApiClient googleApiClient;
-    private LocationRequest locationRequest;
-    private LocationCallback locationCallback;
-    private final String finelocperm = Manifest.permission.ACCESS_FINE_LOCATION;
-    private final int loc_req = 1255;
     private String lang;
-    private String address;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -128,48 +117,11 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
         signUpModel.setPhone_code(phone_code);
         signUpModel.setPhone(phone);
         binding.setModel(signUpModel);
-        binding.edtAddress.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                String query = binding.edtAddress.getText().toString();
-                if (!TextUtils.isEmpty(query)) {
-                    Common.CloseKeyBoard(SignUpActivity.this, binding.edtAddress);
-                    Search(query);
-                    return false;
-                }
-            }
-            return false;
-        });
-
-        updateUI();
-
-        CheckPermission();
-    }
-
-    private void CheckPermission() {
-        if (ActivityCompat.checkSelfPermission(this, finelocperm) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{finelocperm}, loc_req);
-        } else {
-
-            initGoogleApi();
-        }
-    }
-
-    private void initGoogleApi() {
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-        googleApiClient.connect();
-    }
-
-    private void updateUI() {
-
-        SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        fragment.getMapAsync(this);
-
 
     }
+
+
+
 
     private void getDataFromIntent() {
         Intent intent = getIntent();
@@ -395,14 +347,13 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
         RequestBody name_part = Common.getRequestBodyText(signUpModel.getName());
         RequestBody phone_code_part = Common.getRequestBodyText(signUpModel.getPhone_code());
         RequestBody phone_part = Common.getRequestBodyText(signUpModel.getPhone());
-        RequestBody email_part = Common.getRequestBodyText("");
 
 
         MultipartBody.Part image = Common.getMultiPart(this, uri, "logo");
 
 
         Api.getService(Tags.base_url)
-                .signUpWithImage(name_part, phone_code_part, phone_part, email_part, image)
+                .signUpWithImage(name_part, phone_code_part, phone_part, image)
                 .enqueue(new Callback<UserModel>() {
                     @Override
                     public void onResponse(Call<UserModel> call, Response<UserModel> response) {
@@ -411,6 +362,11 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
                             preferences.create_update_userdata(SignUpActivity.this, response.body());
                             navigateToHomeActivity();
                         } else {
+                            try {
+                                Log.e("error",response.code()+"__"+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             if (response.code() == 500) {
                                 Toast.makeText(SignUpActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                             } else if (response.code() == 422) {
@@ -449,209 +405,13 @@ public class SignUpActivity extends AppCompatActivity implements Listeners.SignU
         finish();
     }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        initLocationRequest();
-    }
-
-    private void initLocationRequest() {
-        locationRequest = LocationRequest.create();
-        locationRequest.setFastestInterval(1000);
-        locationRequest.setInterval(60000);
-        LocationSettingsRequest.Builder request = new LocationSettingsRequest.Builder();
-        request.addLocationRequest(locationRequest);
-        request.setAlwaysShow(false);
-        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, request.build());
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
-                Status status = locationSettingsResult.getStatus();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        startLocationUpdate();
-
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        try {
-                            status.startResolutionForResult(SignUpActivity.this, 100);
-                        } catch (IntentSender.SendIntentException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                }
-            }
-        });
-    }
-
-    @SuppressLint("MissingPermission")
-    private void startLocationUpdate() {
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                onLocationChanged(locationResult.getLastLocation());
-
-            }
-        };
-        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        if (googleApiClient != null) {
-            googleApiClient.connect();
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        lat = location.getLatitude();
-        lng = location.getLongitude();
-        Addmarker(lat, lng);
-        if (googleApiClient != null) {
-            LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
-            googleApiClient.disconnect();
-        }
-    }
-
-    private void Addmarker(double lat, double lng) {
-
-        this.lat = lat;
-        this.lng = lng;
-
-        if (marker == null) {
-            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
-        } else {
-            marker.setPosition(new LatLng(lat, lng));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
 
 
-        }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        if (googleMap != null) {
-            mMap = googleMap;
-            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.maps));
-            mMap.setTrafficEnabled(false);
-            mMap.setBuildingsEnabled(false);
-            mMap.setIndoorEnabled(true);
-
-            if (lat == 0.0 && lng == 0.0) {
-                mMap.setOnMapClickListener(latLng -> {
-                    lat = latLng.latitude;
-                    lng = latLng.longitude;
-                    Addmarker(lat, lng);
-                    getGeoData(lat, lng);
-
-                });
-
-            } else {
-                Addmarker(lat, lng);
-
-            }
 
 
-        }
-    }
-
-    private void getGeoData(final double lat, double lng) {
-        String location = lat + "," + lng;
-        Api.getService("https://maps.googleapis.com/maps/api/")
-                .getGeoData(location, lang, getString(R.string.map_api_key))
-                .enqueue(new Callback<PlaceGeocodeData>() {
-                    @Override
-                    public void onResponse(Call<PlaceGeocodeData> call, Response<PlaceGeocodeData> response) {
-
-                        if (response.isSuccessful() && response.body() != null) {
-
-                            if (response.body().getResults().size() > 0) {
-                                address = response.body().getResults().get(0).getFormatted_address().replace("Unnamed Road,", "");
-                                binding.edtAddress.setText(address + "");
-                            }
-                        } else {
-
-                            try {
-                                Log.e("error_code", response.errorBody().string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
 
 
-                    }
-
-                    @Override
-                    public void onFailure(Call<PlaceGeocodeData> call, Throwable t) {
-                        try {
-
-                            Toast.makeText(SignUpActivity.this, getString(R.string.something), Toast.LENGTH_LONG).show();
-                        } catch (Exception e) {
-
-                        }
-                    }
-                });
-    }
-
-    private void Search(String query) {
 
 
-        String fields = "id,place_id,name,geometry,formatted_address";
 
-        Api.getService("https://maps.googleapis.com/maps/api/")
-                .searchOnMap("textquery", query, fields, lang, getString(R.string.map_api_key))
-                .enqueue(new Callback<PlaceMapDetailsData>() {
-                    @Override
-                    public void onResponse(Call<PlaceMapDetailsData> call, Response<PlaceMapDetailsData> response) {
-
-                        if (response.isSuccessful() && response.body() != null) {
-
-
-                            if (response.body().getCandidates().size() > 0) {
-
-                                address = response.body().getCandidates().get(0).getFormatted_address().replace("Unnamed Road,", "");
-                                binding.edtAddress.setText(address + "");
-                                Addmarker(response.body().getCandidates().get(0).getGeometry().getLocation().getLat(), response.body().getCandidates().get(0).getGeometry().getLocation().getLng());
-                            }
-                        } else {
-
-                            try {
-                                Log.e("error_code", response.errorBody().string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<PlaceMapDetailsData> call, Throwable t) {
-                        try {
-
-                            Toast.makeText(SignUpActivity.this, getString(R.string.something), Toast.LENGTH_LONG).show();
-                        } catch (Exception e) {
-
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (googleApiClient != null) {
-            if (locationCallback != null) {
-                LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
-                googleApiClient.disconnect();
-                googleApiClient = null;
-            }
-        }
-    }
 }

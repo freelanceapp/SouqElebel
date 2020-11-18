@@ -10,9 +10,7 @@
         <variable
             name="notCount"
             type="Integer" />
-        <variable
-            name="cartcount"
-            type="Integer" />
+
         <variable
             name="title"
             type="String" />
@@ -27,8 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        android:background="@color/white"
-        >
+        android:background="@color/white">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -48,96 +45,89 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
 
-              <LinearLayout
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:orientation="horizontal"
-                  >
-                  <ImageView
-                      android:layout_width="58dp"
-                      android:layout_height="match_parent"
-                      android:src="@drawable/logo"
-                      android:layout_marginStart="10dp"
-                      android:layout_marginEnd="10dp"
-                      android:padding="5dp"
-                      />
-                  <TextView
-                      android:layout_width="0dp"
-                      android:layout_height="wrap_content"
-                      android:layout_weight="1"
-                      android:layout_gravity="center"
-                      android:text="@{title}"
-                      android:textColor="@color/white"
-                      android:textSize="18sp"
-                      android:gravity="center"
-                      />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                  <FrameLayout
-                      android:id="@+id/flNotification"
-                      android:layout_width="40dp"
-                      android:layout_height="40dp"
-                      android:layout_gravity="center_vertical|end"
+                    <ImageView
+                        android:layout_width="58dp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/logo"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:padding="5dp" />
 
-                      >
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:text="@{title}"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:gravity="center" />
 
-                      <ImageView
-                          android:id="@+id/imageNotification"
-                          android:layout_width="35dp"
-                          android:layout_height="35dp"
-                          android:layout_gravity="center"
-                          android:clickable="false"
-                          android:longClickable="false"
-                          android:padding="8dp"
-                          android:src="@drawable/ic_notification"
-                          app:tint="@color/colorPrimary" />
+                    <FrameLayout
+                        android:id="@+id/flNotification"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:background="@drawable/circle_gray"
 
-                      <TextView
-                          android:layout_width="17dp"
-                          android:layout_height="17dp"
-                          android:layout_margin="2dp"
-                          android:background="@drawable/circle_primary2"
-                          android:clickable="false"
-                          android:gravity="center"
-                          android:longClickable="false"
-                          android:singleLine="true"
-                          android:text='@{String.valueOf(notCount),default="0"}'
-                          android:textColor="@color/white"
-                          android:textSize="12sp" />
 
-                  </FrameLayout>
+                        >
 
-                  <FrameLayout
-                      android:visibility="gone"
-                      android:layout_width="40dp"
-                      android:layout_height="40dp"
-                      android:layout_gravity="center_vertical|end"
-                      android:layout_marginStart="5dp"
-                      android:layout_marginEnd="5dp">
 
-                      <ImageView
-                          android:layout_width="35dp"
-                          android:layout_height="35dp"
-                          android:layout_gravity="center"
-                          android:clickable="false"
-                          android:longClickable="false"
-                          android:padding="8dp"
-                          android:src="@drawable/ic_cart"
-                          app:tint="@color/colorPrimary" />
-                      <TextView
-                          android:layout_width="17dp"
-                          android:layout_height="17dp"
-                          android:layout_margin="2dp"
-                          android:background="@drawable/circle_primary2"
-                          android:clickable="false"
-                          android:gravity="center"
-                          android:longClickable="false"
-                          android:singleLine="true"
-                          android:text='@{String.valueOf(cartcount),default="0"}'
-                          android:textColor="@color/white"
-                          android:textSize="12sp" />
+                        <ImageView
+                            android:id="@+id/imageNotification"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_gravity="center"
+                            android:clickable="false"
+                            android:longClickable="false"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_notification"
+                            app:tint="@color/colorPrimary" />
 
-                  </FrameLayout>
-              </LinearLayout>
+                        <TextView
+                            android:layout_width="17dp"
+                            android:layout_height="17dp"
+                            android:layout_margin="2dp"
+                            android:background="@drawable/circle_primary2"
+                            android:clickable="false"
+                            android:gravity="center"
+                            android:longClickable="false"
+                            android:singleLine="true"
+                            android:text='@{String.valueOf(notCount),default="0"}'
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/search"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:background="@drawable/circle_gray">
+
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_gravity="center"
+                            android:clickable="false"
+                            android:longClickable="false"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_search"
+                            app:tint="@color/colorPrimary" />
+
+
+                    </FrameLayout>
+                </LinearLayout>
 
 
             </androidx.appcompat.widget.Toolbar>
@@ -156,7 +146,6 @@
                 android:layout_height="0dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:layout_marginBottom="35dp"
                 app:layout_constraintBottom_toTopOf="@id/llNavBottom"
                 app:layout_constraintTop_toBottomOf="@id/view"
 
@@ -173,8 +162,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:orientation="horizontal"
 
-                
+
                 >
+
                 <FrameLayout
                     android:id="@+id/flHome"
                     android:layout_width="0dp"
@@ -184,6 +174,7 @@
 
 
                     >
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -194,13 +185,14 @@
                         android:paddingBottom="5dp"
 
                         >
+
                         <ImageView
                             android:id="@+id/iconHome"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_home"
-                            app:tint="@color/white"
-                            />
+                            app:tint="@color/white" />
+
                         <TextView
                             android:id="@+id/tvHome"
                             android:layout_width="wrap_content"
@@ -208,18 +200,18 @@
                             android:lines="1"
                             android:text="@string/home"
                             android:textSize="10sp"
-                            android:textColor="@color/white"
-                            />
+                            android:textColor="@color/white" />
                     </LinearLayout>
                 </FrameLayout>
 
                 <FrameLayout
-                    android:id="@+id/flSearch"
+                    android:id="@+id/flFavorite"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
 
                     >
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -230,24 +222,24 @@
                         android:paddingBottom="5dp"
 
                         >
+
                         <ImageView
                             android:id="@+id/iconSearch"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_search"
-                            app:tint="@color/black"
-                            />
+                            android:src="@drawable/ic_fill_heart"
+                            app:tint="@color/black" />
+
                         <TextView
                             android:id="@+id/tvSearch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:lines="1"
-                            android:text="@string/search"
+                            android:text="@string/favourite"
                             android:textSize="10sp"
                             android:textColor="@color/black"
                             android:ellipsize="end"
-                            android:visibility="gone"
-                            />
+                            android:visibility="gone" />
                     </LinearLayout>
 
 
@@ -259,29 +251,10 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-android:background="@color/colorPrimary"
+                    android:background="@color/colorPrimary"
+
                     >
-                    <LinearLayout
-                        android:id="@+id/ll"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:orientation="vertical"
-android:layout_margin="4dp"
-                        android:background="@color/colorPrimary"
 
-                        >
-                        <ImageView
-                            android:id="@+id/iconReservations"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_user"
-                            app:tint="@color/colorPrimary"
-                            android:visibility="gone"
-                            />
-
-                    </LinearLayout>
 
                 </FrameLayout>
 
@@ -293,6 +266,7 @@ android:layout_margin="4dp"
                     android:layout_weight="1"
 
                     >
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -310,6 +284,7 @@ android:layout_margin="4dp"
                             android:layout_height="31dp"
                             android:src="@drawable/ic_user"
                             app:tint="@color/black" />
+
                         <TextView
                             android:id="@+id/tvProfile"
                             android:layout_width="wrap_content"
@@ -319,8 +294,7 @@ android:layout_margin="4dp"
                             android:textSize="10sp"
                             android:textColor="@color/black"
                             android:ellipsize="end"
-                            android:visibility="gone"
-                            />
+                            android:visibility="gone" />
                     </LinearLayout>
 
                 </FrameLayout>
@@ -333,6 +307,7 @@ android:layout_margin="4dp"
                     android:layout_weight="1"
 
                     >
+
                     <LinearLayout
 
                         android:layout_width="match_parent"
@@ -351,6 +326,7 @@ android:layout_margin="4dp"
                             android:layout_height="31dp"
                             android:src="@drawable/ic_setting"
                             app:tint="@color/black" />
+
                         <TextView
                             android:id="@+id/tvSettings"
                             android:layout_width="wrap_content"
@@ -360,8 +336,7 @@ android:layout_margin="4dp"
                             android:textSize="10sp"
                             android:textColor="@color/black"
                             android:ellipsize="end"
-                            android:visibility="gone"
-                            />
+                            android:visibility="gone" />
                     </LinearLayout>
 
                 </FrameLayout>
@@ -370,12 +345,13 @@ android:layout_margin="4dp"
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:backgroundTint="@color/white"
-            android:src="@drawable/ic_user"
+            android:src="@drawable/ic_add"
             app:tint="@color/colorPrimary"
             app:layout_anchor="@id/llNavBottom"
             app:layout_anchorGravity="center_horizontal"

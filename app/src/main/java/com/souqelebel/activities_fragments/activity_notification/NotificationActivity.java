@@ -19,6 +19,7 @@ import com.souqelebel.databinding.ActivityNotificationBinding;
 import com.souqelebel.interfaces.Listeners;
 import com.souqelebel.language.Language;
 import com.souqelebel.models.NotificationDataModel;
+import com.souqelebel.models.NotificationModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
 import com.souqelebel.remote.Api;
@@ -40,12 +41,11 @@ import retrofit2.Response;
 public class NotificationActivity extends AppCompatActivity implements Listeners.BackListener {
     private ActivityNotificationBinding binding;
     private String lang;
-    private List<NotificationDataModel.NotificationModel> notificationModelList;
+    private List<NotificationModel> notificationModelList;
     private NotificationAdapter adapter;
     private Preferences preferences;
     private UserModel userModel;
-    private int current_page = 1;
-    private boolean isLoading = false;
+
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -81,28 +81,6 @@ public class NotificationActivity extends AppCompatActivity implements Listeners
         binding.recView.setAdapter(adapter);
 
 
-//        binding.recView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                if (dy>0)
-//                {
-//                    int total_item = binding.recView.getAdapter().getItemCount();
-//                    int last_visible_item = ((LinearLayoutManager)binding.recView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-//
-//                    if (total_item>=20&&(total_item-last_visible_item)==5&&!isLoading)
-//                    {
-//
-//                        isLoading = true;
-//                        int page = current_page+1;
-//                        notificationModelList.add(null);
-//                        adapter.notifyItemInserted(notificationModelList.size()-1);
-//
-//                        loadMore(page);
-//                    }
-//                }
-//            }
-//        });
         getNotification();
 
     }
@@ -110,7 +88,7 @@ public class NotificationActivity extends AppCompatActivity implements Listeners
     private void getNotification() {
         try {
             Api.getService(Tags.base_url)
-                    .getNotification("off", userModel.getUser().getToken())
+                    .getNotification( userModel.getUser().getToken())
                     .enqueue(new Callback<NotificationDataModel>() {
                         @Override
                         public void onResponse(Call<NotificationDataModel> call, Response<NotificationDataModel> response) {
@@ -168,78 +146,8 @@ public class NotificationActivity extends AppCompatActivity implements Listeners
         }
     }
 
-    private void loadMore(int page) {
-        /*try {
 
-            Api.getService(Tags.base_url)
-                    .getNotification(userModel.getUser().getToken(),page,"on",20)
-                    .enqueue(new Callback<NotificationDataModel>() {
-                        @Override
-                        public void onResponse(Call<NotificationDataModel> call, Response<NotificationDataModel> response) {
-                            isLoading = false;
-                            notificationModelList.remove(notificationModelList.size() - 1);
-                            adapter.notifyItemRemoved(notificationModelList.size() - 1);
-
-
-                            if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-
-                                int oldPos = notificationModelList.size()-1;
-
-                                notificationModelList.addAll(response.body().getData());
-
-                                if (response.body().getData().size() > 0) {
-                                    current_page = response.body().getMeta().getCurrent_page();
-                                    adapter.notifyItemRangeChanged(oldPos,notificationModelList.size()-1);
-
-                                }
-                            } else {
-                                if (response.code() == 500) {
-                                    Toast.makeText(NotificationActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
-
-
-                                } else {
-                                    Toast.makeText(NotificationActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
-
-                                    try {
-
-                                        Log.e("error", response.code() + "_" + response.errorBody().string());
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<NotificationDataModel> call, Throwable t) {
-                            try {
-
-                                if (notificationModelList.get(notificationModelList.size() - 1) == null) {
-                                    isLoading = false;
-                                    notificationModelList.remove(notificationModelList.size() - 1);
-                                    adapter.notifyItemRemoved(notificationModelList.size() - 1);
-
-                                }
-
-                                if (t.getMessage() != null) {
-                                    Log.e("error", t.getMessage());
-                                    if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
-                                        Toast.makeText(NotificationActivity.this, R.string.something, Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(NotificationActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                            } catch (Exception e) {
-                            }
-                        }
-                    });
-        } catch (Exception e) {
-
-        }*/
-    }
-
-    public void setItemData(NotificationDataModel.NotificationModel notificationModel, int adapterPosition) {
+    public void setItemData(NotificationModel notificationModel, int adapterPosition) {
 
 
         try {

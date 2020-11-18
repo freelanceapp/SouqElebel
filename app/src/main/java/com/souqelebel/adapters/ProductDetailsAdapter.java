@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.souqelebel.R;
-import com.souqelebel.activities_fragments.activity_order_details.OrderDetailsActivity;
 import com.souqelebel.databinding.ProductDetailsRowBinding;
 import com.souqelebel.models.OrderModel;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
@@ -51,10 +50,7 @@ public class ProductDetailsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         myHolder.binding.simplarate.setOnRatingBarChangeListener(new SimpleRatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(SimpleRatingBar simpleRatingBar, float rating, boolean fromUser) {
-                if (context instanceof OrderDetailsActivity) {
-                    OrderDetailsActivity productDetailsActivity = (OrderDetailsActivity) context;
-                    productDetailsActivity.makerate(list.get(myHolder.getLayoutPosition()).getProduct_id(), rating);
-                }
+
             }
         });
 

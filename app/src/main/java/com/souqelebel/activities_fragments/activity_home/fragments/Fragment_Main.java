@@ -192,9 +192,7 @@ public class Fragment_Main extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 100) {
-            activity.displayFragmentMyReservations();
-        }
+
 
     }
 

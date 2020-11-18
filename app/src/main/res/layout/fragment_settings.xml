@@ -68,7 +68,7 @@
                             android:padding="8dp"
                             android:rotation='@{lang.equals("ar")?180:0}'
                             android:src="@drawable/ic_next"
-                            android:tint="@color/color4"
+                            app:tint="@color/color4"
                             android:visibility="gone"
 
                             />
@@ -128,7 +128,7 @@
                         android:padding="3dp"
                         android:rotation='@{lang.equals("ar")?180:0}'
                         android:src="@drawable/ic_right_arrow"
-                        android:tint="@color/gray5" />
+                        app:tint="@color/gray5" />
                 </LinearLayout>
 
                 <View
@@ -136,43 +136,7 @@
                     android:layout_height="10dp"
                     android:background="@drawable/small_rounded_stroke_gray2"
                     android:layerType="software" />
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:gravity="center_vertical"
-                    android:onClick="@{()->actions.onTone()}"
-                    android:orientation="horizontal"
-                    android:paddingStart="15dp"
-                    android:paddingEnd="15dp">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_weight="1"
-                        android:clickable="false"
-                        android:longClickable="false"
-                        android:singleLine="true"
-                        android:text="@string/notifications"
-                        android:textColor="@color/gray11"
-                        android:textSize="14sp" />
-
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:padding="3dp"
-                        android:rotation='@{lang.equals("ar")?180:0}'
-                        android:src="@drawable/ic_right_arrow"
-                        android:tint="@color/gray5" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:background="@drawable/small_rounded_stroke_gray2"
-                    android:layerType="software" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
@@ -214,7 +178,7 @@
                         android:padding="3dp"
                         android:rotation='@{lang.equals("ar")?180:0}'
                         android:src="@drawable/ic_right_arrow"
-                        android:tint="@color/gray5" />
+                        app:tint="@color/gray5" />
                 </LinearLayout>
 
                 <View
@@ -252,7 +216,7 @@
                         android:padding="3dp"
                         android:rotation='@{lang.equals("ar")?180:0}'
                         android:src="@drawable/ic_right_arrow"
-                        android:tint="@color/gray5" />
+                        app:tint="@color/gray5" />
                 </LinearLayout>
 
                 <View
@@ -292,7 +256,7 @@
                         android:padding="3dp"
                         android:rotation='@{lang.equals("ar")?180:0}'
                         android:src="@drawable/ic_right_arrow"
-                        android:tint="@color/gray5" />
+                        app:tint="@color/gray5" />
                 </LinearLayout>
 
                 <View
@@ -331,7 +295,7 @@
                         android:padding="3dp"
                         android:rotation='@{lang.equals("ar")?180:0}'
                         android:src="@drawable/ic_right_arrow"
-                        android:tint="@color/gray5" />
+                        app:tint="@color/gray5" />
                 </LinearLayout>
 
                 <View
@@ -370,7 +334,7 @@
                         android:padding="3dp"
                         android:rotation='@{lang.equals("ar")?180:0}'
                         android:src="@drawable/ic_right_arrow"
-                        android:tint="@color/gray5" />
+                        app:tint="@color/gray5" />
                 </LinearLayout>
 
                 <View
@@ -379,44 +343,6 @@
                     android:background="@drawable/small_rounded_stroke_gray2"
                     android:layerType="software" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:gravity="center_vertical"
-                    android:onClick="@{()->actions.bepartener()}"
-                    android:orientation="horizontal"
-                    android:paddingStart="15dp"
-                    android:paddingEnd="15dp"
-
-                    >
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_weight="1"
-                        android:clickable="false"
-                        android:longClickable="false"
-                        android:singleLine="true"
-                        android:text="@string/contact_us"
-                        android:textColor="@color/gray11"
-                        android:textSize="14sp" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:padding="3dp"
-                        android:rotation='@{lang.equals("ar")?180:0}'
-                        android:src="@drawable/ic_right_arrow"
-                        android:tint="@color/gray5" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:background="@drawable/small_rounded_stroke_gray2"
-                    android:layerType="software" />
 
 
                 <LinearLayout
@@ -479,31 +405,36 @@
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:padding="3dp"
-                        android:src="@drawable/facebook" />
+                        android:src="@drawable/facebook"
+                        android:onClick="@{()->actions.onFacebook()}"
+                        />
+
 
                     <ImageView
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:padding="3dp"
-                        android:src="@drawable/google_plus" />
+                        android:src="@drawable/instagram"
+                        android:onClick="@{()->actions.onInstagram()}"
+
+                        />
 
                     <ImageView
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:padding="3dp"
-                        android:src="@drawable/instagram" />
+                        android:src="@drawable/twitter"
+                        android:onClick="@{()->actions.onTwitter()}"
 
-                    <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:padding="3dp"
-                        android:src="@drawable/twitter" />
+
+                        />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
+                    android:layout_marginBottom="40dp"
                     android:gravity="center"
                     android:onClick="@{()->actions.logout()}"
                     android:orientation="horizontal">

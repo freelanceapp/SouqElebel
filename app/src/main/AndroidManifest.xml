@@ -42,22 +42,12 @@
             android:name=".activities_fragments.activity_bepartener.BePartenerActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name=".activities_fragments.activity_order_details.OrderDetailsActivity"
-            android:configChanges="keyboardHidden|screenSize|orientation"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name=".activities_fragments.activity_cart.CartActivity"
-            android:configChanges="keyboardHidden|screenSize|orientation"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".activities_fragments.activity_edit_profile.EditProfileActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name=".activities_fragments.activity_checkout.CheckoutActivity"
-            android:configChanges="keyboardHidden|screenSize|orientation"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+
 
         <activity
             android:name=".activities_fragments.activity_login.LoginActivity"
@@ -67,7 +57,9 @@
         <activity
             android:name=".activities_fragments.activity_verification_code.VerificationCodeActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"
+
+            />
         <activity
             android:name=".activities_fragments.activity_product_details.ProductDetailsActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
@@ -83,7 +75,9 @@
         <activity
             android:name=".activities_fragments.activity_signup.SignUpActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"
+
+            />
 
         <activity
             android:name=".activities_fragments.activity_about_app.AboutAppActivity"
@@ -94,9 +88,6 @@
             android:name=".activities_fragments.activity_home.HomeActivity"
             android:configChanges="keyboardHidden|screenSize|orientation" />
 
-        <activity
-            android:name=".activities_fragments.activity_my_favorite.MyFavoriteActivity"
-            android:configChanges="keyboardHidden|screenSize|orientation" />
 
         <activity
             android:name=".activities_fragments.activity_search.SearchActivity"

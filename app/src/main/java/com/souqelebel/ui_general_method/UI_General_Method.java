@@ -65,6 +65,27 @@ public class UI_General_Method {
 
     }
 
+    @BindingAdapter("user_image")
+    public static void user_image(View view, String endPoint) {
+        if (view instanceof CircleImageView) {
+            CircleImageView imageView = (CircleImageView) view;
+
+            if (endPoint != null) {
+                Picasso.get().load(Uri.parse(Tags.IMAGE_URL + endPoint)).placeholder(R.drawable.image_avatar).into(imageView);
+            }
+        } else if (view instanceof RoundedImageView) {
+            RoundedImageView imageView = (RoundedImageView) view;
+            if (endPoint != null) {
+                Picasso.get().load(Uri.parse(Tags.IMAGE_URL + endPoint)).fit().placeholder(R.drawable.image_avatar).into(imageView);
+            }
+        } else if (view instanceof ImageView) {
+            ImageView imageView = (ImageView) view;
+            if (endPoint != null) {
+                Picasso.get().load(Uri.parse(Tags.IMAGE_URL + endPoint)).placeholder(R.drawable.image_avatar).fit().into(imageView);
+            }
+        }
+
+    }
 
     @BindingAdapter("product_image")
     public static void product_image(View view, String endPoint) {

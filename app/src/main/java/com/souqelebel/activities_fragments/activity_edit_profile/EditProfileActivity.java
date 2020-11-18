@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -34,6 +35,7 @@ import com.souqelebel.tags.Tags;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -47,13 +49,14 @@ import retrofit2.Response;
 public class EditProfileActivity extends AppCompatActivity implements Listeners.BackListener, Listeners.UpdateProfileListener {
     private ActivityEditProfileBinding binding;
     private String lang;
-    private EditProfileModel editProfileModel;
+    private EditProfileModel model;
     private Preferences preferences;
     private UserModel userModel;
+    private final String READ_PERM = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private final String write_permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+    private final String camera_permission = Manifest.permission.CAMERA;
+    private final int READ_REQ = 1, CAMERA_REQ = 2;
     private Uri uri = null;
-    private final String camera_perm = Manifest.permission.CAMERA;
-    private final String write_perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-    private final int camera_req = 1;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -77,26 +80,23 @@ public class EditProfileActivity extends AppCompatActivity implements Listeners.
         lang = Paper.book().read("lang", Locale.getDefault().getLanguage());
         binding.setLang(lang);
         binding.setBackListener(this);
-        editProfileModel = new EditProfileModel();
-        binding.setUpdateListener(this);
-        binding.setEditModel(editProfileModel);
+        model = new EditProfileModel();
+        model.setName(userModel.getUser().getName());
+        binding.setListener(this);
+        binding.setModel(model);
         updateUI();
 
-        binding.flImage.setOnClickListener(view -> checkCameraPermission());
+        binding.flImage.setOnClickListener(view -> openSheet());
 
 
     }
 
 
     private void updateUI() {
-        binding.edtName.setText(userModel.getUser().getName()+"");
-
-        editProfileModel.setName(userModel.getUser().getName());
-        editProfileModel.setEmail(userModel.getUser().getEmail());
 
 
         if (userModel.getUser().getLogo() != null && !userModel.getUser().getLogo().isEmpty() && !userModel.getUser().getLogo().equals("0")) {
-            binding.iconUpload.setVisibility(View.GONE);
+            binding.icon.setVisibility(View.GONE);
             Picasso.get().load(Uri.parse(Tags.IMAGE_URL + userModel.getUser().getLogo())).fit().into(binding.image);
 
         }
@@ -105,69 +105,17 @@ public class EditProfileActivity extends AppCompatActivity implements Listeners.
     }
 
 
-    private void checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, camera_perm) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, write_perm) == PackageManager.PERMISSION_GRANTED) {
-            selectImage();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{camera_perm, write_perm}, camera_req);
-        }
-    }
-
-    private void selectImage() {
-
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, camera_req);
+    @Override
+    public void openSheet() {
+        binding.expandLayout.setExpanded(true, true);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == camera_req && grantResults.length > 0) {
-            boolean isGranted = false;
-            for (int i = 0; i < grantResults.length; i++) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    isGranted = true;
-                } else {
-                    isGranted = false;
-                }
-            }
-            if (isGranted) {
-                selectImage();
-
-            } else {
-                Toast.makeText(this, "access images denied", Toast.LENGTH_SHORT).show();
-            }
-
-        }
-    }
+    public void closeSheet() { binding.expandLayout.collapse(true); }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == camera_req && resultCode == Activity.RESULT_OK && data != null) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            binding.iconUpload.setVisibility(View.GONE);
-            binding.image.setImageBitmap(bitmap);
-            uri = getUriFromBitmap(bitmap);
-            binding.image.setImageBitmap(bitmap);
-
-        }
-    }
-
-
-    private Uri getUriFromBitmap(Bitmap bitmap) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        return Uri.parse(MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "", ""));
-    }
-
-
-    @Override
-    public void updateProfile() {
-
-        if (editProfileModel.isDataValid(this)) {
+    public void checkDataValid() {
+        if (model.isDataValid(this)) {
             if (uri != null) {
                 updateWithImage();
             } else {
@@ -176,21 +124,140 @@ public class EditProfileActivity extends AppCompatActivity implements Listeners.
         }
     }
 
+    @Override
+    public void checkReadPermission() {
+        closeSheet();
+        if (ActivityCompat.checkSelfPermission(this, READ_PERM) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{READ_PERM}, READ_REQ);
+        } else {
+            SelectImage(READ_REQ);
+        }
+    }
+
+    @Override
+    public void checkCameraPermission() {
+        closeSheet();
+
+        if (ContextCompat.checkSelfPermission(this, write_permission) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, camera_permission) == PackageManager.PERMISSION_GRANTED
+        ) {
+            SelectImage(CAMERA_REQ);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{camera_permission, write_permission}, CAMERA_REQ);
+        }
+    }
+
+
+    private void SelectImage(int req) {
+
+        Intent intent = new Intent();
+
+        if (req == READ_REQ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            } else {
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+
+            }
+
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setType("image/*");
+            startActivityForResult(intent, req);
+
+        } else if (req == CAMERA_REQ) {
+            try {
+                intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, req);
+            } catch (SecurityException e) {
+                Toast.makeText(this, R.string.perm_image_denied, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, R.string.perm_image_denied, Toast.LENGTH_SHORT).show();
+
+            }
+
+
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == READ_REQ) {
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                SelectImage(requestCode);
+            } else {
+                Toast.makeText(this, getString(R.string.perm_image_denied), Toast.LENGTH_SHORT).show();
+            }
+
+        } else if (requestCode == CAMERA_REQ) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                SelectImage(requestCode);
+            } else {
+                Toast.makeText(this, getString(R.string.perm_image_denied), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == READ_REQ && resultCode == Activity.RESULT_OK && data != null) {
+
+            uri = data.getData();
+            File file = new File(Common.getImagePath(this, uri));
+            Picasso.get().load(file).fit().into(binding.image);
+            binding.icon.setVisibility(View.GONE);
+
+        } else if (requestCode == CAMERA_REQ && resultCode == Activity.RESULT_OK && data != null) {
+
+            binding.icon.setVisibility(View.GONE);
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            uri = getUriFromBitmap(bitmap);
+            if (uri != null) {
+                String path = Common.getImagePath(this, uri);
+
+                if (path != null) {
+                    Picasso.get().load(new File(path)).fit().into(binding.image);
+
+                } else {
+                    Picasso.get().load(uri).fit().into(binding.image);
+
+                }
+            }
+
+
+        }
+
+    }
+
+    private Uri getUriFromBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        return Uri.parse(MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "", ""));
+    }
+
+
+
+
+
 
     private void updateWithoutImage() {
 
         final ProgressDialog dialog = Common.createProgressDialog(this, getString(R.string.wait));
         dialog.setCancelable(false);
         dialog.show();
-
-        RequestBody id_part = Common.getRequestBodyText(String.valueOf(userModel.getUser().getId()));
-        RequestBody name_part = Common.getRequestBodyText(editProfileModel.getName());
-        RequestBody email_part = Common.getRequestBodyText(editProfileModel.getEmail());
+        RequestBody name_part = Common.getRequestBodyText(model.getName());
 
 
         try {
             Api.getService(Tags.base_url)
-                    .editClientProfileWithoutImage(userModel.getUser().getToken(), name_part, email_part)
+                    .editClientProfileWithoutImage(userModel.getUser().getToken(), name_part)
                     .enqueue(new Callback<UserModel>() {
                         @Override
                         public void onResponse(Call<UserModel> call, Response<UserModel> response) {
@@ -253,14 +320,12 @@ public class EditProfileActivity extends AppCompatActivity implements Listeners.
         dialog.setCancelable(false);
         dialog.show();
 
-        RequestBody id_part = Common.getRequestBodyText(String.valueOf(userModel.getUser().getId()));
-        RequestBody name_part = Common.getRequestBodyText(editProfileModel.getName());
-        RequestBody email_part = Common.getRequestBodyText(editProfileModel.getEmail());
+        RequestBody name_part = Common.getRequestBodyText(model.getName());
         MultipartBody.Part image_part = Common.getMultiPart(this, uri, "logo");
 
         try {
             Api.getService(Tags.base_url)
-                    .editClientProfileWithImage(userModel.getUser().getToken(), name_part, email_part, image_part)
+                    .editClientProfileWithImage(userModel.getUser().getToken(), name_part, image_part)
                     .enqueue(new Callback<UserModel>() {
                         @Override
                         public void onResponse(Call<UserModel> call, Response<UserModel> response) {

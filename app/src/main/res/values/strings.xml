@@ -219,8 +219,8 @@
     <string name="cost">Cost</string>
     <string name="days">Days</string>
     <string name="select_location_on_map">Select location on map</string>
-    <string name="adviersment_photos">Adviersment Photos</string>
-    <string name="my_advertisements">My Advertisements</string>
-    <string name="the_electronic_card">The electronic card</string>
+    <string name="adviersment_photos">Ads Photos</string>
+    <string name="my_advertisements">My Ads</string>
+    <string name="not_av">Not available</string>
 
 </resources>

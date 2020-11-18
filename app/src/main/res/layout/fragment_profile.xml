@@ -5,10 +5,6 @@
 
     <data>
         <variable
-            name="action"
-            type="com.souqelebel.interfaces.Listeners.SettingActions" />
-
-        <variable
             name="model"
             type="com.souqelebel.models.UserModel" />
         <variable
@@ -48,7 +44,7 @@
                     app:civ_border_color="@color/white"
                     app:civ_border_width="3dp"
                     android:src="@drawable/image_avatar"
-                    image="@{model.user.logo}"
+                    user_image="@{model.user.logo}"
                     />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -98,7 +94,7 @@
 
                 >
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_gravity="center_vertical"
@@ -114,7 +110,7 @@
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@color/color3"
+                            android:src="@color/colorPrimary"
                             android:layout_gravity="center"
                             />
                         <ImageView
@@ -122,7 +118,7 @@
                             android:layout_height="20dp"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_phone_call"
-                            android:tint="@color/white"
+                            app:tint="@color/white"
                             android:padding="3dp"
                             />
                     </FrameLayout>
@@ -134,7 +130,7 @@
                         android:layout_marginEnd="10dp"
                         android:textColor="@color/color2"
                         android:textSize="14sp"
-                        android:text='@{model.user.phone_code+model.user.phone+""}'
+                        android:text='@{model.user.phone_code+model.user.phone}'
                         />
                 </LinearLayout>
             </FrameLayout>
@@ -148,7 +144,7 @@
 
                 >
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_gravity="center_vertical"
@@ -171,8 +167,8 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_map"
-                            android:tint="@color/white"
+                            android:src="@drawable/ic_user"
+                            app:tint="@color/white"
                             android:padding="3dp"
                             />
                     </FrameLayout>
@@ -184,7 +180,7 @@
                         android:layout_marginEnd="10dp"
                         android:textColor="@color/color2"
                         android:textSize="14sp"
-                        android:text='@{model.user.address+""}'
+                        android:text='@{model.user.name}'
                         />
                 </LinearLayout>
             </FrameLayout>
@@ -212,14 +208,15 @@
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@color/white"
+                            android:src="@color/colorPrimary"
                             android:layout_gravity="center"
                             />
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_edit"
+                            android:src="@drawable/ic_megaphone"
+                            app:tint="@color/white"
                             android:padding="2dp"
                             />
                     </FrameLayout>
@@ -248,84 +245,20 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_right_arrow"
                             android:rotation='@{lang.equals("ar")?180:0}'
-                            android:tint="@color/color5"
-                            />
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-            </FrameLayout>
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/small_rounded_gray"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_gravity="center_vertical"
-                    android:layout_margin="10dp"
-                    >
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        >
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:src="@color/second"
-                            android:layout_gravity="center"
-                            />
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_edit"
-                            android:padding="2dp"
-                            />
-                    </FrameLayout>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:textColor="@color/color2"
-                        android:textSize="16sp"
-                        android:text="@string/the_electronic_card"
-                        />
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="3dp"
-                        app:cardBackgroundColor="@color/white"
-                        android:layout_margin="5dp"
-                        >
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_right_arrow"
-                            android:rotation='@{lang.equals("ar")?180:0}'
-                            android:tint="@color/color5"
+                            app:tint="@color/color5"
                             />
                     </androidx.cardview.widget.CardView>
                 </LinearLayout>
             </FrameLayout>
 
             <FrameLayout
+                android:id="@+id/flEditProfile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/small_rounded_gray"
-                android:onClick="@{()->action.onEditProfile()}"
                 >
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -381,7 +314,7 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_right_arrow"
                             android:rotation='@{lang.equals("ar")?180:0}'
-                            android:tint="@color/color5"
+                            app:tint="@color/color5"
                             />
                     </androidx.cardview.widget.CardView>
                 </LinearLayout>

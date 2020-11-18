@@ -17,12 +17,6 @@ public class UserModel implements Serializable {
         private String phone_code;
         private String phone;
         private String logo;
-        private String block;
-        private String login;
-        private String latitude;
-        private String longitude;
-        private String address;
-        private long logout_time;
         private String token;
 
         public int getId() {
@@ -51,30 +45,6 @@ public class UserModel implements Serializable {
 
         public String getLogo() {
             return logo;
-        }
-
-        public String getBlock() {
-            return block;
-        }
-
-        public String getLogin() {
-            return login;
-        }
-
-        public String getLatitude() {
-            return latitude;
-        }
-
-        public String getLongitude() {
-            return longitude;
-        }
-
-        public String getAddress() {
-            return address;
-        }
-
-        public long getLogout_time() {
-            return logout_time;
         }
 
         public String getToken() {

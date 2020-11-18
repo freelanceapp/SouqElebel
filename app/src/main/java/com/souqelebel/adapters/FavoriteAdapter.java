@@ -10,20 +10,22 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.souqelebel.R;
+import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Favorite;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Main;
+import com.souqelebel.databinding.ProductFavoriteRowBinding;
 import com.souqelebel.databinding.ProductRowBinding;
+import com.souqelebel.models.FavoriteModel;
 import com.souqelebel.models.ProductModel;
 
 import java.util.List;
 
-public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<ProductModel> list;
+public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private List<FavoriteModel> list;
     private Context context;
     private LayoutInflater inflater;
     private Fragment fragment;
-    private int i = -1;
 
-    public ProductAdapter(List<ProductModel> list, Context context, Fragment fragment) {
+    public FavoriteAdapter(List<FavoriteModel> list, Context context, Fragment fragment) {
         this.list = list;
         this.context = context;
         inflater = LayoutInflater.from(context);
@@ -33,7 +35,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ProductRowBinding binding = DataBindingUtil.inflate(inflater, R.layout.product_row, parent, false);
+        ProductFavoriteRowBinding binding = DataBindingUtil.inflate(inflater, R.layout.product_favorite_row, parent, false);
         return new MyHolder(binding);
 
     }
@@ -42,13 +44,13 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof MyHolder) {
             MyHolder myHolder = (MyHolder) holder;
-            myHolder.binding.setModel(list.get(position));
+            myHolder.binding.setModel(list.get(position).getProduct());
 
             myHolder.itemView.setOnClickListener(view -> {
-                if (fragment instanceof Fragment_Main) {
+                if (fragment instanceof Fragment_Favorite) {
 
-                    Fragment_Main fragment_main = (Fragment_Main) fragment;
-                    fragment_main.setProductItemData(list.get(myHolder.getAdapterPosition()));
+                    Fragment_Favorite fragment_favorite = (Fragment_Favorite) fragment;
+                    fragment_favorite.disLike(list.get(myHolder.getAdapterPosition()),myHolder.getAdapterPosition());
                 }
             });
 
@@ -64,9 +66,9 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public class MyHolder extends RecyclerView.ViewHolder {
-        public ProductRowBinding binding;
+        public ProductFavoriteRowBinding binding;
 
-        public MyHolder(@NonNull ProductRowBinding binding) {
+        public MyHolder(@NonNull ProductFavoriteRowBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
 

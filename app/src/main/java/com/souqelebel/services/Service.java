@@ -3,9 +3,7 @@ package com.souqelebel.services;
 
 import com.souqelebel.models.AddOrderModel;
 import com.souqelebel.models.BankDataModel;
-import com.souqelebel.models.CategoryProductDataModel;
-import com.souqelebel.models.Create_Order_Model;
-import com.souqelebel.models.FavouriteDataModel;
+import com.souqelebel.models.FavoriteDataModel;
 import com.souqelebel.models.MainCategoryDataModel;
 import com.souqelebel.models.NotificationCount;
 import com.souqelebel.models.NotificationDataModel;
@@ -13,6 +11,7 @@ import com.souqelebel.models.OrderDataModel;
 import com.souqelebel.models.OrderModel;
 import com.souqelebel.models.PlaceGeocodeData;
 import com.souqelebel.models.PlaceMapDetailsData;
+import com.souqelebel.models.ProductDataModel;
 import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.SettingModel;
 import com.souqelebel.models.Slider_Model;
@@ -74,17 +73,15 @@ public interface Service {
 
     @FormUrlEncoded
     @POST("api/register")
-    Call<UserModel> signUpWithoutImage(
-            @Field("name") String name,
-            @Field("phone_code") String phone_code,
-            @Field("phone") String phone,
-            @Field("email") String email
+    Call<UserModel> signUpWithoutImage(@Field("name") String name,
+                                       @Field("phone_code") String phone_code,
+                                       @Field("phone") String phone,
+                                       @Field("email") String email
     );
 
     @Multipart
     @POST("api/register")
     Call<UserModel> signUpWithImage(@Part("name") RequestBody name,
-                                    @Part("email") RequestBody email,
                                     @Part("phone_code") RequestBody phone_code,
                                     @Part("phone") RequestBody phone,
                                     @Part MultipartBody.Part logo
@@ -93,18 +90,16 @@ public interface Service {
     );
 
     @GET("api/sttings")
-    Call<SettingModel> getSetting(
-            @Header("lang") String lang
+    Call<SettingModel> getSetting(@Header("lang") String lang
 
     );
+
 
     @GET("api/slider")
     Call<Slider_Model> get_slider();
 
 
-   /* @GET("api/offers")
-    Call<ProductDataModel> Search(@Query("pagination") String pagination,
-                                  @Query("user_id") int user_id);
+   /*
 
     @GET("api/get-most-sale")
     Call<ProductDataModel> getMostSeller(@Query("pagination") String pagination);
@@ -155,22 +150,14 @@ public interface Service {
 
     @FormUrlEncoded
     @POST("api/favorite-action")
-    Call<ResponseBody> addFavoriteProduct(
-            @Header("Authorization") String Authorization,
-            @Field("product_id") String product_id)
-            ;
+    Call<ResponseBody> favoriteAction(@Header("Authorization") String Authorization,
+                                          @Field("product_id") int product_id);
 
     @GET("api/my-favorites")
-    Call<FavouriteDataModel> getMyFavoriteProducts(
-            @Header("Authorization") String Authorization,
-            @Query("pagination") String pagination
-    )
-            ;
+    Call<FavoriteDataModel> getMyFavoriteProducts(@Header("Authorization") String Authorization);
 
     @GET("api/my-notification")
-    Call<NotificationDataModel> getNotification(
-            @Query("pagination") String pagination
-            , @Header("Authorization") String user_token
+    Call<NotificationDataModel> getNotification(@Header("Authorization") String user_token
 
 
     );
@@ -208,7 +195,6 @@ public interface Service {
     @POST("api/update-profile")
     Call<UserModel> editClientProfileWithImage(@Header("Authorization") String Authorization,
                                                @Part("name") RequestBody name,
-                                               @Part("email") RequestBody email,
                                                @Part MultipartBody.Part logo
 
     );
@@ -216,8 +202,7 @@ public interface Service {
     @Multipart
     @POST("api/update-profile")
     Call<UserModel> editClientProfileWithoutImage(@Header("Authorization") String Authorization,
-                                                  @Part("name") RequestBody name,
-                                                  @Part("email") RequestBody email
+                                                  @Part("name") RequestBody name
     );
 
     @FormUrlEncoded
@@ -228,6 +213,7 @@ public interface Service {
             @Field("user_id") String user_id,
             @Field("rate") String rate
     );
+
     @FormUrlEncoded
     @POST("api/send-partner")
     Call<ResponseBody> bepartner(
@@ -237,12 +223,17 @@ public interface Service {
             @Field("longitude") String longitude,
             @Field("address") String address
     );
-    @POST("api/send-order")
-    Call<ResponseBody> accept_orders(
-            @Header("Authorization") String Authorization,
-            @Body Create_Order_Model create_order_model);
+
 
 
     @GET("api/category-product")
     Call<MainCategoryDataModel> getMainCategory_Products();
+
+    @GET("api/search-product")
+    Call<ProductDataModel> search(@Query("user_id") String user_id,
+                                  @Query("pagination") String pagination,
+                                  @Query("page") int page,
+                                  @Query("search_name") String search_name
+
+                                  );
 }

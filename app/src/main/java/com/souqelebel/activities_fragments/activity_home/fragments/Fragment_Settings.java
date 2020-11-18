@@ -8,9 +8,11 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +21,6 @@ import androidx.fragment.app.Fragment;
 
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_about_app.AboutAppActivity;
-import com.souqelebel.activities_fragments.activity_bepartener.BePartenerActivity;
 import com.souqelebel.activities_fragments.activity_edit_profile.EditProfileActivity;
 import com.souqelebel.activities_fragments.activity_home.HomeActivity;
 import com.souqelebel.activities_fragments.activity_language.LanguageActivity;
@@ -30,14 +31,20 @@ import com.souqelebel.models.DefaultSettings;
 import com.souqelebel.models.SettingModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
+import com.souqelebel.remote.Api;
 import com.souqelebel.share.Common;
+import com.souqelebel.tags.Tags;
 
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
 import io.paperdb.BuildConfig;
 import io.paperdb.Paper;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -50,6 +57,7 @@ public class Fragment_Settings extends Fragment implements Listeners.SettingActi
     private UserModel userModel;
     private SettingModel settingmodel;
     private DefaultSettings defaultSettings;
+    private final  String regex = "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)";
 
     public static Fragment_Settings newInstance() {
 
@@ -67,7 +75,6 @@ public class Fragment_Settings extends Fragment implements Listeners.SettingActi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
-       // getAppData();
 
     }
 
@@ -92,6 +99,54 @@ public class Fragment_Settings extends Fragment implements Listeners.SettingActi
             binding.tvRingtoneName.setText(getString(R.string.default1));
 
         }
+
+        getAppData();
+    }
+
+
+    private void getAppData() {
+
+        Api.getService(Tags.base_url)
+                .getSetting(lang)
+                .enqueue(new Callback<SettingModel>() {
+                    @Override
+                    public void onResponse(Call<SettingModel> call, Response<SettingModel> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+
+                            settingmodel = response.body();
+
+                        } else {
+                            try {
+
+                                Log.e("error", response.code() + "_" + response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if (response.code() == 500) {
+
+                            } else {
+
+
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SettingModel> call, Throwable t) {
+                        try {
+
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage());
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                } else {
+                                }
+                            }
+
+                        } catch (Exception e) {
+                        }
+                    }
+                });
+
     }
 
 
@@ -102,30 +157,19 @@ public class Fragment_Settings extends Fragment implements Listeners.SettingActi
         startActivity(intent);
     }
 
-    @Override
-    public void aboutApp() {
-        Intent intent=new Intent(activity, AboutAppActivity.class);
-        intent.putExtra("type",1);
-        startActivity(intent);
-    }
+
 
     @Override
     public void share() {
 
     }
 
-    @Override
-    public void onEditProfile() {
-        Intent intent = new Intent(activity, EditProfileActivity.class);
-        intent.putExtra("data",preferences.getUserData(activity));
-        startActivityForResult(intent,2);
-    }
+
 
     @Override
     public void onLanguageSetting() {
         Intent intent = new Intent(activity, LanguageActivity.class);
-        intent.putExtra("type",1);
-        startActivity(intent);
+        startActivityForResult(intent,200);
     }
 
 
@@ -198,10 +242,92 @@ public class Fragment_Settings extends Fragment implements Listeners.SettingActi
         }
     }
 
+    @Override
+    public void onFacebook() {
+        if (settingmodel!=null){
+            if (settingmodel.getSettings()!=null){
+                if (!settingmodel.getSettings().getFacebook().isEmpty()){
+                    String url = settingmodel.getSettings().getFacebook();
+                    if (url.matches(regex)){
+                        viewSocialIntent(url);
+                    }else {
+                        Toast.makeText(activity,R.string.inv_url, Toast.LENGTH_SHORT).show();
+
+                    }
+                }else {
+                    Toast.makeText(activity, R.string.not_av, Toast.LENGTH_SHORT).show();
+
+                }
+            }else {
+                Toast.makeText(activity, R.string.not_av, Toast.LENGTH_SHORT).show();
+
+            }
+        }else {
+            Toast.makeText(activity, R.string.not_av, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+
 
     @Override
-    public void bepartener() {
-        Intent intent = new Intent(activity, BePartenerActivity.class);
+    public void onInstagram() {
+
+        if (settingmodel!=null){
+            if (settingmodel.getSettings()!=null){
+                if (!settingmodel.getSettings().getFacebook().isEmpty()){
+                    String url = settingmodel.getSettings().getInstagram();
+                    if (url.matches(regex)){
+                        viewSocialIntent(url);
+                    }else {
+                        Toast.makeText(activity,R.string.inv_url, Toast.LENGTH_SHORT).show();
+
+                    }
+                }else {
+                    Toast.makeText(activity, R.string.not_av, Toast.LENGTH_SHORT).show();
+
+                }
+            }else {
+                Toast.makeText(activity, R.string.not_av, Toast.LENGTH_SHORT).show();
+
+            }
+        }else {
+            Toast.makeText(activity, R.string.not_av, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onTwitter()
+    {
+
+        if (settingmodel!=null){
+            if (settingmodel.getSettings()!=null){
+                if (!settingmodel.getSettings().getFacebook().isEmpty()){
+                    String url = settingmodel.getSettings().getTwitter();
+                    if (url.matches(regex)){
+                        viewSocialIntent(url);
+                    }else {
+                        Toast.makeText(activity,R.string.inv_url, Toast.LENGTH_SHORT).show();
+
+                    }
+                }else {
+                    Toast.makeText(activity, R.string.not_av, Toast.LENGTH_SHORT).show();
+
+                }
+            }else {
+                Toast.makeText(activity, R.string.not_av, Toast.LENGTH_SHORT).show();
+
+            }
+        }else {
+            Toast.makeText(activity, R.string.not_av, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void viewSocialIntent(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
         startActivity(intent);
     }
 
@@ -227,10 +353,9 @@ public class Fragment_Settings extends Fragment implements Listeners.SettingActi
 
 
             }
-        } else if (requestCode == 200 && resultCode == RESULT_OK ) {
-
-            activity.setResult(RESULT_OK);
-            //finish();
+        } else if (requestCode == 200 && resultCode == RESULT_OK &&data!=null) {
+            String lang = data.getStringExtra("lang");
+            activity.refreshActivity(lang);
         }
     }
 }

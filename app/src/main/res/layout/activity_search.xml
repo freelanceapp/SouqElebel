@@ -62,7 +62,7 @@
                             android:padding="8dp"
                             android:rotation='@{lang.equals("ar")?180:0}'
                             android:src="@drawable/ic_left_arrow"
-                            android:tint="@color/white"
+                            app:tint="@color/white"
 
                             />
 
@@ -98,24 +98,26 @@
 
                     >
 
+                    <Space
+                        android:layout_width="20dp"
+                        android:layout_height="0dp"/>
                     <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight=".7"
-                        android:background='@{lang.equals("ar")?@drawable/right_rounded:@drawable/left_rounded}'
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+
 
                         >
 
                         <ImageView
                             android:id="@+id/imgSearch"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:clickable="true"
                             android:focusable="true"
                             android:padding="5dp"
                             android:src="@drawable/ic_search"
-                            android:tint="@color/white"
+                            app:tint="@color/black"
 
                             />
                     </FrameLayout>
@@ -123,11 +125,10 @@
 
                     <EditText
                         android:id="@+id/edtSearch"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
-                        android:layout_weight="2.3"
                         android:background="@color/white"
                         android:clickable="true"
                         android:focusable="true"
@@ -157,7 +158,9 @@
             android:id="@+id/progBar"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:visibility="gone"
+            />
 
         <TextView
             android:id="@+id/tvNoData"
@@ -167,7 +170,7 @@
             android:text="@string/no_search_results"
             android:textColor="@color/black"
             android:textSize="17sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
     </FrameLayout>
 
 
