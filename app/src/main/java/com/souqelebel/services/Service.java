@@ -1,9 +1,12 @@
 package com.souqelebel.services;
 
 
+import com.souqelebel.models.AddAdsModel;
 import com.souqelebel.models.AddOrderModel;
 import com.souqelebel.models.BankDataModel;
 import com.souqelebel.models.FavoriteDataModel;
+import com.souqelebel.models.ItemAddAds;
+import com.souqelebel.models.ItemAddAdsDataModel;
 import com.souqelebel.models.MainCategoryDataModel;
 import com.souqelebel.models.NotificationCount;
 import com.souqelebel.models.NotificationDataModel;
@@ -16,6 +19,8 @@ import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.SettingModel;
 import com.souqelebel.models.Slider_Model;
 import com.souqelebel.models.UserModel;
+
+import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -151,7 +156,7 @@ public interface Service {
     @FormUrlEncoded
     @POST("api/favorite-action")
     Call<ResponseBody> favoriteAction(@Header("Authorization") String Authorization,
-                                          @Field("product_id") int product_id);
+                                      @Field("product_id") int product_id);
 
     @GET("api/my-favorites")
     Call<FavoriteDataModel> getMyFavoriteProducts(@Header("Authorization") String Authorization);
@@ -225,7 +230,6 @@ public interface Service {
     );
 
 
-
     @GET("api/category-product")
     Call<MainCategoryDataModel> getMainCategory_Products();
 
@@ -235,5 +239,73 @@ public interface Service {
                                   @Query("page") int page,
                                   @Query("search_name") String search_name
 
-                                  );
+    );
+
+    @FormUrlEncoded
+    @POST("api/getSubDepartmentsByBasicDepartmentId")
+    Call<ItemAddAdsDataModel> getItemsAds(@Field("department_id") int department_id,
+                                          @Field("pagination") String pagination,
+                                          @Field("limit_per_page") int limit_per_page
+
+    );
+
+    @Multipart
+    @POST("api/addProduct")
+    Call<ResponseBody> addAdsWithVideoWithList(@Part("title") RequestBody title,
+                                               @Part("departemnt_id") RequestBody departemnt_id,
+                                               @Part("price") RequestBody price,
+                                               @Part("user_id") RequestBody user_id,
+                                               @Part("details") RequestBody details,
+                                               @Part("address") RequestBody address,
+                                               @Part("google_lat") RequestBody google_lat,
+                                               @Part("google_long") RequestBody google_long,
+                                               @Part MultipartBody.Part vedio,
+                                               @Part List<MultipartBody.Part> images,
+                                               @Part("product_details[]") List<ItemAddAds> itemAddAds
+    );
+
+
+    @Multipart
+    @POST("api/addProduct")
+    Call<ResponseBody> addAdsWithoutVideoWithoutList(@Part("title") RequestBody title,
+                                                     @Part("departemnt_id") RequestBody departemnt_id,
+                                                     @Part("price") RequestBody price,
+                                                     @Part("user_id") RequestBody user_id,
+                                                     @Part("details") RequestBody details,
+                                                     @Part("address") RequestBody address,
+                                                     @Part("google_lat") RequestBody google_lat,
+                                                     @Part("google_long") RequestBody google_long,
+                                                     @Part List<MultipartBody.Part> images
+    );
+
+
+    @Multipart
+    @POST("api/addProduct")
+    Call<ResponseBody> addAdsWithoutVideoWithList(@Part("title") RequestBody title,
+                                                  @Part("departemnt_id") RequestBody departemnt_id,
+                                                  @Part("price") RequestBody price,
+                                                  @Part("user_id") RequestBody user_id,
+                                                  @Part("details") RequestBody details,
+                                                  @Part("address") RequestBody address,
+                                                  @Part("google_lat") RequestBody google_lat,
+                                                  @Part("google_long") RequestBody google_long,
+                                                  @Part List<MultipartBody.Part> image,
+                                                  @Part("product_details[]") List<ItemAddAds> itemAddAds
+
+    );
+
+
+    @Multipart
+    @POST("api/addProduct")
+    Call<ResponseBody> addAdsWithVideoWithoutList(@Part("title") RequestBody title,
+                                                  @Part("departemnt_id") RequestBody departemnt_id,
+                                                  @Part("price") RequestBody price,
+                                                  @Part("user_id") RequestBody user_id,
+                                                  @Part("details") RequestBody details,
+                                                  @Part("address") RequestBody address,
+                                                  @Part("google_lat") RequestBody google_lat,
+                                                  @Part("google_long") RequestBody google_long,
+                                                  @Part List<MultipartBody.Part> image,
+                                                  @Part MultipartBody.Part vedio
+    );
 }

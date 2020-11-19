@@ -444,7 +444,6 @@ public class HomeActivity extends AppCompatActivity {
                 token = task.getResult().getToken();
 
                 try {
-                    Log.e("llll", userModel.getUser().getToken());
                     Api.getService(Tags.base_url)
                             .updatePhoneToken(userModel.getUser().getToken(), token, "android")
                             .enqueue(new Callback<ResponseBody>() {

@@ -235,6 +235,9 @@
     <string name="max_ad_photo">حد اقصى 2 صورة</string>
     <string name="choose_category">إختر القسم</string>
     <string name="vid_pem_denied">الوصول للفيديو غير متاح</string>
+    <string name="length_video_shouldnot_exceed">يجب الا تزيد مدة الفيديو عن 59 ثانية</string>
+    <string name="ad_name">إسم الاعلان</string>
+    <string name="choose_maximum2_image">اختر حد ادني 2 صورة للإعلان</string>
 
 
 </resources>

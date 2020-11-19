@@ -12,8 +12,12 @@
             type="String" />
 
         <variable
+            name="model"
+            type="com.souqelebel.models.AddAdsModel" />
+        <variable
             name="backListener"
             type="com.souqelebel.interfaces.Listeners.BackListener" />
+
 
         <variable
             name="listener"
@@ -100,6 +104,48 @@
                             android:layout_height="match_parent"/>
                     </FrameLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:text="@string/ad_name"
+                        />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/small_rounded_btn_memory_selected"
+                        android:layout_marginTop="10dp"
+
+                        >
+                        <Space
+                            android:layout_width="10dp"
+                            android:layout_height="0dp"/>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_megaphone"
+                            app:tint="@color/colorPrimary"
+                            android:layout_gravity="center_vertical"
+                            />
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/transparent"
+                            android:hint="@string/ad_name"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/gray4"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:singleLine="true"
+                            android:textSize="14sp"
+                            android:text="@={model.name}"
+                            error="@{model.error_name}"
+                            />
+                    </LinearLayout>
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recView"
                         android:layout_width="match_parent"
@@ -151,21 +197,44 @@
                         android:textColor="@color/black"
                         />
 
-                    <com.google.android.exoplayer2.ui.PlayerView
-                        android:id="@+id/player"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        app:use_controller="true"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:controller_layout_id="@layout/exoplayer_controler_ui"
-                        app:fastforward_increment="1500"
-                        app:rewind_increment="1500"
-                        app:auto_show="false"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:visibility="invisible"
-                        />
+
+                        >
+                        <com.google.android.exoplayer2.ui.PlayerView
+                            android:id="@+id/player"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            app:use_controller="true"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:controller_layout_id="@layout/exoplayer_controler_ui"
+                            app:fastforward_increment="1500"
+                            app:rewind_increment="1500"
+                            app:auto_show="false"
+                            app:resize_mode="fill"
+                            app:played_color="@color/colorPrimary"
+                            />
+                        <FrameLayout
+                            android:id="@+id/flPlayerView"
+
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/gray1"
+                            >
+                            <ImageView
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_play_button"
+                                app:tint="@color/gray3"
+                                />
+                        </FrameLayout>
+
+                    </FrameLayout>
 
                     <FrameLayout
                         android:id="@+id/flUploadVideo"
@@ -201,7 +270,14 @@
 
                         </LinearLayout>
                     </FrameLayout>
+                    <LinearLayout
+                        android:id="@+id/llAdditionViews"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        >
 
+                    </LinearLayout>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -241,8 +317,12 @@
                             android:singleLine="true"
                             android:inputType="numberDecimal"
                             android:textSize="14sp"
+                            android:text="@={model.price}"
+                            error="@{model.error_price}"
                             />
                     </LinearLayout>
+
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -282,7 +362,8 @@
                             android:inputType="textImeMultiLine"
                             android:gravity="top|start"
                             android:textSize="14sp"
-
+                            android:text="@={model.details}"
+                            error="@{model.error_details}"
 
                             />
                     </LinearLayout>
@@ -319,6 +400,8 @@
                             android:singleLine="true"
                             android:imeOptions="actionSearch"
                             android:textSize="14sp"
+                            android:text="@={model.address}"
+                            error="@{model.error_address}"
                             />
 
 
@@ -350,6 +433,7 @@
                         android:textSize="16sp"
                         android:textColor="@color/white"
                         android:text="@string/add_ads"
+                        android:onClick="@{()->listener.checkDataValid()}"
                         />
                 </LinearLayout>
             </ScrollView>

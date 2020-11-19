@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -18,15 +19,23 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.location.Location;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -64,18 +73,26 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_about_app.AboutAppActivity;
+import com.souqelebel.activities_fragments.activity_search.SearchActivity;
 import com.souqelebel.activities_fragments.activity_signup.FragmentMapTouchListener;
 import com.souqelebel.adapters.ImageAdsAdapter;
 import com.souqelebel.adapters.SpinnerCategoryAdapter;
 import com.souqelebel.databinding.ActivityAboutAppBinding;
 import com.souqelebel.databinding.ActivityAddAdsBinding;
+import com.souqelebel.databinding.ItemAddAdsBinding;
 import com.souqelebel.interfaces.Listeners;
 import com.souqelebel.language.Language;
+import com.souqelebel.models.AddAdsModel;
+import com.souqelebel.models.ItemAddAds;
+import com.souqelebel.models.ItemAddAdsDataModel;
 import com.souqelebel.models.MainCategoryDataModel;
 import com.souqelebel.models.MainCategoryModel;
 import com.souqelebel.models.PlaceGeocodeData;
 import com.souqelebel.models.PlaceMapDetailsData;
+import com.souqelebel.models.ProductDataModel;
 import com.souqelebel.models.SettingModel;
+import com.souqelebel.models.UserModel;
+import com.souqelebel.preferences.Preferences;
 import com.souqelebel.remote.Api;
 import com.souqelebel.share.Common;
 import com.souqelebel.tags.Tags;
@@ -89,6 +106,9 @@ import java.util.List;
 import java.util.Locale;
 
 import io.paperdb.Paper;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -120,6 +140,12 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
     private List<MainCategoryModel> categoryModelList;
     private SpinnerCategoryAdapter spinnerCategoryAdapter;
     private ImageAdsAdapter imageAdsAdapter;
+    private boolean isVideoAvailable = false;
+    private List<ItemAddAds> itemAddAdsList;
+    private List<View> viewList;
+    private AddAdsModel model;
+    private Preferences preferences;
+    private UserModel userModel;
 
 
     @Override
@@ -139,14 +165,20 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
 
 
     private void initView() {
+        model = new AddAdsModel();
+        viewList = new ArrayList<>();
+        itemAddAdsList = new ArrayList<>();
         categoryModelList = new ArrayList<>();
         imagesUriList = new ArrayList<>();
+        preferences = Preferences.getInstance();
+        userModel = preferences.getUserData(this);
         MainCategoryModel mainCategoryModel = new MainCategoryModel();
         mainCategoryModel.setId(0);
         mainCategoryModel.setTitle(getString(R.string.choose_category));
         categoryModelList.add(mainCategoryModel);
         Paper.init(this);
         lang = Paper.book().read("lang", "ar");
+        binding.setModel(model);
         binding.setBackListener(this);
         binding.setLang(lang);
         binding.setListener(this);
@@ -170,12 +202,71 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
         spinnerCategoryAdapter = new SpinnerCategoryAdapter(categoryModelList,this);
         binding.spinner.setAdapter(spinnerCategoryAdapter);
 
+        binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i==0){
+                    model.setDepartment_id(0);
+                    if (itemAddAdsList.size()>0){
+                        removeItems();
+                    }
+                }else {
+                    model.setDepartment_id(categoryModelList.get(i).getId());
+                    getItems(categoryModelList.get(i).getId());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
         binding.flUploadVideo.setOnClickListener(view -> {
             checkVideoPermission();
         });
 
         getMainCategory();
 
+    }
+
+    private void addItems()
+    {
+
+        removeItems();
+
+        List<ItemAddAds> itemAddAdsList = new ArrayList<>();
+        for (ItemAddAds itemAddAds:this.itemAddAdsList){
+            itemAddAds.setContent("");
+            ItemAddAdsBinding itemAddAdsBinding = DataBindingUtil.inflate(LayoutInflater.from(this),R.layout.item_add_ads,null,false);
+            itemAddAdsBinding.tvTitle.setText(itemAddAds.getTitle());
+            itemAddAdsBinding.edt.setHint(itemAddAds.getTitle());
+            Picasso.get().load(Uri.parse(Tags.IMAGE_URL+itemAddAds.getIcon())).into(itemAddAdsBinding.icon, new com.squareup.picasso.Callback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
+            itemAddAdsBinding.edt.setTag(itemAddAds.getId());
+            itemAddAdsBinding.setModel(itemAddAds);
+            itemAddAdsList.add(itemAddAds);
+            binding.llAdditionViews.addView(itemAddAdsBinding.getRoot());
+            viewList.add(itemAddAdsBinding.getRoot());
+        }
+        model.setItemAddAdsList(itemAddAdsList);
+
+    }
+
+    private void removeItems()
+    {
+        binding.llAdditionViews.removeAllViews();
+        viewList.clear();
     }
 
     private void getMainCategory()
@@ -227,76 +318,43 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
     }
     private void initPlayer(Uri uri)
     {
-        binding.player.setVisibility(View.VISIBLE);
 
-        DataSource.Factory factory = new DefaultDataSourceFactory(this, "Ta3leem_live");
+        if (isVideoAvailable){
+            binding.flPlayerView.setVisibility(View.GONE);
+            DataSource.Factory factory = new DefaultDataSourceFactory(this, "Ta3leem_live");
 
 
-        if (player == null) {
+            if (player == null) {
+                player = new SimpleExoPlayer.Builder(this).build();
+                binding.player.setPlayer(player);
+                MediaSource mediaSource = new ProgressiveMediaSource.Factory(factory).createMediaSource(uri);
+                player.prepare(mediaSource);
 
-            player = new SimpleExoPlayer.Builder(this).build();
-            binding.player.setPlayer(player);
-            MediaSource mediaSource = new ProgressiveMediaSource.Factory(factory).createMediaSource(uri);
-            player.prepare(mediaSource);
+                player.seekTo(currentWindow, currentPosition);
+                player.setPlayWhenReady(playWhenReady);
+                player.prepare(mediaSource);
+            } else {
 
-            player.seekTo(currentWindow, currentPosition);
-            player.setPlayWhenReady(playWhenReady);
-            player.prepare(mediaSource);
-        } else {
-            MediaSource mediaSource = new ProgressiveMediaSource.Factory(factory).createMediaSource(uri);
+                MediaSource mediaSource = new ProgressiveMediaSource.Factory(factory).createMediaSource(uri);
 
-            player.seekTo(currentWindow, currentPosition);
-            player.setPlayWhenReady(playWhenReady);
-            player.prepare(mediaSource);
+                player.seekTo(currentWindow, currentPosition);
+                player.setPlayWhenReady(playWhenReady);
+                player.prepare(mediaSource);
+            }
         }
 
 
 
 
+
+
     }
-
-
-    private void releasePlayer()
+    @Override
+    protected void onStop()
     {
-        if (player != null) {
-            playWhenReady = player.getPlayWhenReady();
-            currentWindow = player.getCurrentWindowIndex();
-            currentPosition = player.getCurrentPosition();
-            player.release();
-            player = null;
-
-        }
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (Util.SDK_INT >= 24) {
-            if (videoUri != null) {
-                initPlayer(videoUri);
-
-            }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (Util.SDK_INT < 24 || player == null) {
-            if (videoUri != null) {
-                initPlayer(videoUri);
-
-            }
-        }
-
-    }
-
-    @Override
-    protected void onStop() {
         super.onStop();
         if (Util.SDK_INT >= 24) {
-            releasePlayer();
+            release();
         }
     }
 
@@ -305,8 +363,24 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
     protected void onPause() {
         super.onPause();
         if (Util.SDK_INT < 24) {
-            releasePlayer();
+            release();
         }
+    }
+
+
+    private void release(){
+        if (player!=null){
+            currentWindow = player.getCurrentWindowIndex();
+            currentPosition = player.getCurrentPosition();
+            player.release();
+            player=null;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initPlayer(videoUri);
     }
 
     @Override
@@ -328,10 +402,246 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
 
     @Override
     public void checkDataValid() {
+        model.setImagesList(imagesUriList);
+        for (int index =0;index<model.getItemAddAdsList().size();index++){
+            ItemAddAds itemAddAds = model.getItemAddAdsList().get(index);
+            View view = viewList.get(index);
+            LinearLayout linearLayout = (LinearLayout) view;
+            EditText editText = linearLayout.findViewWithTag(itemAddAds.getId());
+            if (itemAddAds.getContent().isEmpty()){
+                editText.setError(getString(R.string.field_required));
+            }else {
+                editText.setError(null);
+
+            }
+        }
+        if (model.isDataValid(this)){
+
+            if (videoUri!=null&&model.getItemAddAdsList().size()>0){
+                addAdsWithVideoWithList();
+            }else if (videoUri==null&&model.getItemAddAdsList().size()==0){
+                addAdsWithoutVideoWithoutList();
+
+            }else if (videoUri!=null&&model.getItemAddAdsList().size()==0){
+                addAdsWithVideoWithoutList();
+
+            }else if (videoUri==null&&model.getItemAddAdsList().size()>0){
+                addAdsWithoutVideoWithList();
+
+            }
+        }
+    }
+
+    private void addAdsWithoutVideoWithList() {
+        ProgressDialog dialog = Common.createProgressDialog(this, getString(R.string.wait));
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestBody id_part = Common.getRequestBodyText(String.valueOf(userModel.getUser().getId()));
+        RequestBody title_part = Common.getRequestBodyText(model.getName());
+        RequestBody department_id_part = Common.getRequestBodyText(String.valueOf(model.getDepartment_id()));
+        RequestBody price_part = Common.getRequestBodyText(model.getPrice());
+        RequestBody details_part = Common.getRequestBodyText(model.getDetails());
+        RequestBody address_part = Common.getRequestBodyText(model.getAddress());
+        RequestBody lat_part = Common.getRequestBodyText(String.valueOf(model.getLat()));
+        RequestBody lng_part = Common.getRequestBodyText(String.valueOf(model.getLng()));
 
 
+        Api.getService(Tags.base_url)
+                .addAdsWithoutVideoWithList(title_part,department_id_part,price_part,id_part,details_part,address_part,lat_part,lng_part,getMultipartImage(),model.getItemAddAdsList())
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        dialog.dismiss();
+                        if (response.isSuccessful() && response.body() != null) {
+                            finish();
+                        } else {
+                            if (response.code() == 500) {
+                                Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }{
+                                Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        try {
+                            dialog.dismiss();
+                            if (t.getMessage() != null) {
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage() + "__");
+                        }
+                    }
+                });
+    }
+
+    private void addAdsWithVideoWithoutList() {
+        ProgressDialog dialog = Common.createProgressDialog(this, getString(R.string.wait));
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestBody id_part = Common.getRequestBodyText(String.valueOf(userModel.getUser().getId()));
+        RequestBody title_part = Common.getRequestBodyText(model.getName());
+        RequestBody department_id_part = Common.getRequestBodyText(String.valueOf(model.getDepartment_id()));
+        RequestBody price_part = Common.getRequestBodyText(model.getPrice());
+        RequestBody details_part = Common.getRequestBodyText(model.getDetails());
+        RequestBody address_part = Common.getRequestBodyText(model.getAddress());
+        RequestBody lat_part = Common.getRequestBodyText(String.valueOf(model.getLat()));
+        RequestBody lng_part = Common.getRequestBodyText(String.valueOf(model.getLng()));
+        MultipartBody.Part video = Common.getMultiPartVideo(this, videoUri, "vedio");
 
 
+        Api.getService(Tags.base_url)
+                .addAdsWithVideoWithoutList(title_part,department_id_part,price_part,id_part,details_part,address_part,lat_part,lng_part,getMultipartImage(),video)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        dialog.dismiss();
+                        if (response.isSuccessful() && response.body() != null) {
+                            finish();
+                        } else {
+                            if (response.code() == 500) {
+                                Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }{
+                                Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        try {
+                            dialog.dismiss();
+                            if (t.getMessage() != null) {
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage() + "__");
+                        }
+                    }
+                });
+    }
+
+    private void addAdsWithoutVideoWithoutList() {
+        ProgressDialog dialog = Common.createProgressDialog(this, getString(R.string.wait));
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestBody id_part = Common.getRequestBodyText(String.valueOf(userModel.getUser().getId()));
+        RequestBody title_part = Common.getRequestBodyText(model.getName());
+        RequestBody department_id_part = Common.getRequestBodyText(String.valueOf(model.getDepartment_id()));
+        RequestBody price_part = Common.getRequestBodyText(model.getPrice());
+        RequestBody details_part = Common.getRequestBodyText(model.getDetails());
+        RequestBody address_part = Common.getRequestBodyText(model.getAddress());
+        RequestBody lat_part = Common.getRequestBodyText(String.valueOf(model.getLat()));
+        RequestBody lng_part = Common.getRequestBodyText(String.valueOf(model.getLng()));
+
+
+        Api.getService(Tags.base_url)
+                .addAdsWithoutVideoWithoutList(title_part,department_id_part,price_part,id_part,details_part,address_part,lat_part,lng_part,getMultipartImage())
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        dialog.dismiss();
+                        if (response.isSuccessful() && response.body() != null) {
+                            finish();
+                        } else {
+                            if (response.code() == 500) {
+                                Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }{
+                                Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        try {
+                            dialog.dismiss();
+                            if (t.getMessage() != null) {
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage() + "__");
+                        }
+                    }
+                });
+    }
+
+    private void addAdsWithVideoWithList() {
+        ProgressDialog dialog = Common.createProgressDialog(this, getString(R.string.wait));
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestBody id_part = Common.getRequestBodyText(String.valueOf(userModel.getUser().getId()));
+        RequestBody title_part = Common.getRequestBodyText(model.getName());
+        RequestBody department_id_part = Common.getRequestBodyText(String.valueOf(model.getDepartment_id()));
+        RequestBody price_part = Common.getRequestBodyText(model.getPrice());
+        RequestBody details_part = Common.getRequestBodyText(model.getDetails());
+        RequestBody address_part = Common.getRequestBodyText(model.getAddress());
+        RequestBody lat_part = Common.getRequestBodyText(String.valueOf(model.getLat()));
+        RequestBody lng_part = Common.getRequestBodyText(String.valueOf(model.getLng()));
+        MultipartBody.Part video = Common.getMultiPartVideo(this, videoUri, "vedio");
+
+
+        Api.getService(Tags.base_url)
+                .addAdsWithVideoWithList(title_part,department_id_part,price_part,id_part,details_part,address_part,lat_part,lng_part,video,getMultipartImage(),model.getItemAddAdsList())
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        dialog.dismiss();
+                        if (response.isSuccessful() && response.body() != null) {
+                            finish();
+                        } else {
+                            if (response.code() == 500) {
+                                Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            }{
+                                Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        try {
+                            dialog.dismiss();
+                            if (t.getMessage() != null) {
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage() + "__");
+                        }
+                    }
+                });
+    }
+
+    private List<MultipartBody.Part> getMultipartImage(){
+        List<MultipartBody.Part> parts = new ArrayList<>();
+        for (String path :imagesUriList){
+            Uri uri = Uri.parse(path);
+            MultipartBody.Part part = Common.getMultiPart(this,uri,"image");
+            parts.add(part);
+        }
+        return parts;
     }
 
     @Override
@@ -491,11 +801,11 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
         }else if (requestCode == VIDEO_REQ && resultCode == Activity.RESULT_OK && data != null) {
 
             Uri uri = data.getData();
-            videoUri = uri;
-            initPlayer(videoUri);
+            new VideoTask().execute(uri);
         }
 
     }
+
 
     private Uri getUriFromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -644,8 +954,8 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
     }
     private void addMarker(LatLng latLng)
     {
-       /* signUpModel.setLat(latLng.latitude);
-        signUpModel.setLng(latLng.longitude);*/
+        model.setLat(latLng.latitude);
+        model.setLng(latLng.longitude);
         if (marker==null){
             marker = mMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         }else {
@@ -736,4 +1046,105 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
 
         }
     }
+
+    public  class VideoTask extends AsyncTask<Uri,Void,Long>
+    {
+        MediaMetadataRetriever retriever;
+        private Uri uri ;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            retriever = new MediaMetadataRetriever();
+        }
+
+        @Override
+        protected Long doInBackground(Uri... uris) {
+            uri = uris[0];
+            retriever.setDataSource(AddAdsActivity.this,uris[0]);
+            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            long duration  = Long.parseLong(time)/1000;
+            retriever.release();
+            return duration;
+        }
+
+        @Override
+        protected void onPostExecute(Long duration) {
+            super.onPostExecute(duration);
+            if (duration<=59){
+                isVideoAvailable = true;
+                videoUri = uri;
+                model.setVideo_url(videoUri.toString());
+                initPlayer(videoUri);
+
+            }else {
+                Toast.makeText(AddAdsActivity.this, R.string.length_video_shouldnot_exceed, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+    private void getItems(int department_id){
+        ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();;
+        Api.getService(Tags.base_url)
+                .getItemsAds(department_id,"off",20)
+                .enqueue(new Callback<ItemAddAdsDataModel>() {
+                    @Override
+                    public void onResponse(Call<ItemAddAdsDataModel> call, Response<ItemAddAdsDataModel> response) {
+                        dialog.dismiss();
+                        if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                            if (response.body().getData().size()>0){
+                                itemAddAdsList.clear();
+                                itemAddAdsList.addAll(response.body().getData());
+                                Log.e("size",itemAddAdsList.size()+"__");
+                                model.setHasExtraItems(true);
+                                addItems();
+                            }else {
+                                model.setHasExtraItems(false);
+                                model.setItemAddAdsList(new ArrayList<>());
+                                removeItems();
+
+                            }
+                        } else {
+                            dialog.dismiss();
+
+                            if (response.code() == 500) {
+                                Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+
+
+                            } else {
+                                Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+
+                                try {
+
+                                    Log.e("error", response.code() + "_" + response.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ItemAddAdsDataModel> call, Throwable t) {
+                        try {
+                            dialog.dismiss();
+
+                            if (t.getMessage() != null) {
+                                Log.e("error", t.getMessage());
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(AddAdsActivity.this, R.string.something, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(AddAdsActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                        } catch (Exception e) {
+                        }
+                    }
+                });
+    }
+
+
 }

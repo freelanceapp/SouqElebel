@@ -31,6 +31,7 @@ public class UI_General_Method {
 
     @BindingAdapter("error")
     public static void setErrorUi(View view, String error) {
+        Log.e("error",error+"__");
         if (view instanceof EditText) {
             EditText editText = (EditText) view;
             editText.setError(error);
