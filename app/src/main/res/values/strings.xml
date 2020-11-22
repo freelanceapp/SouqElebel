@@ -234,5 +234,6 @@
     <string name="length_video_shouldnot_exceed">Length of video shouldn\'t exceed 59 seconds</string>
     <string name="ad_name">Ad Name</string>
     <string name="choose_maximum2_image">Choose maximum 2 ad images</string>
+    <string name="copied">Copied</string>
 
 </resources>

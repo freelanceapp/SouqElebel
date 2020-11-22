@@ -185,7 +185,9 @@ public class Fragment_Main extends Fragment {
 
 
     public void setProductItemData(ProductModel productModel) {
-
+        Intent intent = new Intent(activity,ProductDetailsActivity.class);
+        intent.putExtra("product_id",productModel.getId());
+        startActivity(intent);
     }
 
     @Override

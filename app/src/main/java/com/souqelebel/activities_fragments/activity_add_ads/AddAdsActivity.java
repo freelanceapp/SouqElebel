@@ -32,6 +32,7 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -416,6 +417,7 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
             }
         }
         if (model.isDataValid(this)){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
             if (videoUri!=null&&model.getItemAddAdsList().size()>0){
                 addAdsWithVideoWithList();
@@ -455,6 +457,12 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
                         if (response.isSuccessful() && response.body() != null) {
                             finish();
                         } else {
+                            try {
+                                Log.e("error",response.code()+"__"+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                             if (response.code() == 500) {
                                 Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                             }{
@@ -506,6 +514,12 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
                         if (response.isSuccessful() && response.body() != null) {
                             finish();
                         } else {
+                            try {
+                                Log.e("error",response.code()+"__"+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                             if (response.code() == 500) {
                                 Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                             }{
@@ -556,6 +570,12 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
                         if (response.isSuccessful() && response.body() != null) {
                             finish();
                         } else {
+                            try {
+                                Log.e("error",response.code()+"__"+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                             if (response.code() == 500) {
                                 Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                             }{
@@ -607,6 +627,11 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
                         if (response.isSuccessful() && response.body() != null) {
                             finish();
                         } else {
+                            try {
+                                Log.e("error",response.code()+"__"+response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             if (response.code() == 500) {
                                 Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                             }{
@@ -638,7 +663,7 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
         List<MultipartBody.Part> parts = new ArrayList<>();
         for (String path :imagesUriList){
             Uri uri = Uri.parse(path);
-            MultipartBody.Part part = Common.getMultiPart(this,uri,"image");
+            MultipartBody.Part part = Common.getMultiPart(this,uri,"multi_image[]");
             parts.add(part);
         }
         return parts;

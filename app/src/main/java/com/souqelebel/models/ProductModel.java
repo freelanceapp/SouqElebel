@@ -16,7 +16,10 @@ public class ProductModel implements Serializable {
     private String address;
     private String vedio;
     private String created_at;
+    private UserModel.User user;
     private MainCategoryModel department_fk;
+    private List<ProductImageModel> products_images;
+    private List<ProductDetailsModel> product_details;
 
     public int getId() {
         return id;
@@ -68,5 +71,17 @@ public class ProductModel implements Serializable {
 
     public String getCreated_at() {
         return created_at;
+    }
+
+    public List<ProductImageModel> getProducts_images() {
+        return products_images;
+    }
+
+    public UserModel.User getUser() {
+        return user;
+    }
+
+    public List<ProductDetailsModel> getProduct_details() {
+        return product_details;
     }
 }

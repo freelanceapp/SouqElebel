@@ -21,7 +21,6 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context;
     private LayoutInflater inflater;
     private Fragment fragment;
-    private int i = -1;
 
     public ProductAdapter(List<ProductModel> list, Context context, Fragment fragment) {
         this.list = list;

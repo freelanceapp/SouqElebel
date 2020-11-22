@@ -308,4 +308,10 @@ public interface Service {
                                                   @Part List<MultipartBody.Part> image,
                                                   @Part MultipartBody.Part vedio
     );
+
+    @GET("api/product")
+    Call<ProductModel> getProductById(@Query("user_id") String user_id,
+                                      @Query("product_id") int product_id
+
+    );
 }
