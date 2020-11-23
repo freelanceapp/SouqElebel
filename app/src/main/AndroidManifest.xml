@@ -21,6 +21,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
+        android:requestLegacyExternalStorage="true"
+        android:hardwareAccelerated="false"
         tools:targetApi="m">
         <activity android:name=".activities_fragments.activity_add_ads.AddAdsActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"

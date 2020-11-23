@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ import com.souqelebel.R;
 import com.souqelebel.models.ProductDetailsModel;
 import com.souqelebel.models.ProductImageModel;
 import com.souqelebel.tags.Tags;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -71,7 +73,11 @@ public class SliderAdapter extends PagerAdapter {
             initPlayer(playerView,progressBar,uri);
 
         }else {
-            view = inflater.inflate(R.layout.slider_image,container,false);;        }
+            view = inflater.inflate(R.layout.slider_image,container,false);
+            ImageView imageView = view.findViewById(R.id.image);
+            Picasso.get().load(Uri.parse(Tags.IMAGE_URL+model.getName())).into(imageView);
+
+        }
 
         container.addView(view);
 
@@ -156,10 +162,10 @@ public class SliderAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        super.destroyItem(container, position, object);
         ProductImageModel model = list.get(position);
         if (model.getType().equals("video")){
-
+            progressBar.setVisibility(View.GONE);
+            releasePlayer();
         }
         container.removeView((View) object);
     }
@@ -169,8 +175,7 @@ public class SliderAdapter extends PagerAdapter {
             playWhenReady = player.getPlayWhenReady();
             currentWindow = player.getCurrentWindowIndex();
             currentPosition = player.getCurrentPosition();
-            player.release();
-            player = null;
+            player.stop();
 
         }
     }

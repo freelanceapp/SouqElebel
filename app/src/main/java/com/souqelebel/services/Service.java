@@ -314,4 +314,12 @@ public interface Service {
                                       @Query("product_id") int product_id
 
     );
+
+
+    @FormUrlEncoded
+    @POST("api/favorite-action")
+    Call<ResponseBody> addFavoriteProduct(
+            @Header("Authorization") String Authorization,
+            @Field("product_id") String product_id)
+            ;
 }

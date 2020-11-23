@@ -1,6 +1,7 @@
 package com.souqelebel.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Favorite;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Main;
+import com.souqelebel.activities_fragments.activity_product_details.ProductDetailsActivity;
 import com.souqelebel.databinding.ProductFavoriteRowBinding;
 import com.souqelebel.databinding.ProductRowBinding;
 import com.souqelebel.models.FavoriteModel;
@@ -46,7 +48,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             MyHolder myHolder = (MyHolder) holder;
             myHolder.binding.setModel(list.get(position).getProduct());
 
-            myHolder.itemView.setOnClickListener(view -> {
+            myHolder.binding.imageFavorite.setOnClickListener(view -> {
                 if (fragment instanceof Fragment_Favorite) {
 
                     Fragment_Favorite fragment_favorite = (Fragment_Favorite) fragment;
@@ -54,7 +56,10 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             });
 
-
+            myHolder.itemView.setOnClickListener(view -> {
+                Intent intent=new Intent(context, ProductDetailsActivity.class);
+                context.startActivity(intent);
+            });
 
         }
 

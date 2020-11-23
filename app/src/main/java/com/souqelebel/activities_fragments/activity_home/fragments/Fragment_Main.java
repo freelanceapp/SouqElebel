@@ -27,11 +27,13 @@ import com.souqelebel.adapters.SlidingImage_Adapter;
 import com.souqelebel.databinding.FragmentMainBinding;
 import com.souqelebel.models.MainCategoryDataModel;
 import com.souqelebel.models.MainCategoryModel;
+import com.souqelebel.models.ProductDetailsModel;
 import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.Slider_Model;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
 import com.souqelebel.remote.Api;
+import com.souqelebel.share.Common;
 import com.souqelebel.tags.Tags;
 
 import java.io.IOException;
@@ -42,6 +44,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.paperdb.Paper;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -166,9 +169,6 @@ public class Fragment_Main extends Fragment {
 
 
 
-
-
-
     public void setItemData(MainCategoryModel mainCategoryModel) {
         productModelList.clear();
         productAdapter.notifyDataSetChanged();
@@ -185,8 +185,14 @@ public class Fragment_Main extends Fragment {
 
 
     public void setProductItemData(ProductModel productModel) {
+      /*  String like="";
+        if (productModel.getUser_like()!=null){
+
+            like="t"
+        }*/
         Intent intent = new Intent(activity,ProductDetailsActivity.class);
         intent.putExtra("product_id",productModel.getId());
+
         startActivity(intent);
     }
 

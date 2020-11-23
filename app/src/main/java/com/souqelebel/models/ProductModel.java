@@ -20,6 +20,8 @@ public class ProductModel implements Serializable {
     private MainCategoryModel department_fk;
     private List<ProductImageModel> products_images;
     private List<ProductDetailsModel> product_details;
+    private UserLike user_like;
+
 
     public int getId() {
         return id;
@@ -83,5 +85,17 @@ public class ProductModel implements Serializable {
 
     public List<ProductDetailsModel> getProduct_details() {
         return product_details;
+    }
+
+    public UserLike getUser_like() {
+        return user_like;
+    }
+
+    public void setUser_like(UserLike user_like) {
+        this.user_like = user_like;
+    }
+
+    public class UserLike implements Serializable {
+
     }
 }

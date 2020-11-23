@@ -1,4 +1,4 @@
-  package com.souqelebel.activities_fragments.activity_product_details;
+package com.souqelebel.activities_fragments.activity_product_details;
 
 import android.app.ProgressDialog;
 import android.content.ClipData;
@@ -46,11 +46,14 @@ import com.souqelebel.remote.Api;
 import com.souqelebel.share.Common;
 import com.souqelebel.singleton.CartSingleton;
 import com.souqelebel.tags.Tags;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 import io.paperdb.Paper;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -65,7 +68,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
     private ProductDetailsAdapter adapter;
     private List<ProductDetailsModel> productDetailsModelList;
     private SliderAdapter sliderAdapter;
-    private List<ProductImageModel>productImageModelList;
+    private List<ProductImageModel> productImageModelList;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -87,7 +90,8 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
     private void getDataFromIntent() {
         Intent intent = getIntent();
         if (intent != null) {
-            product_id =  intent.getIntExtra("product_id",0);
+            product_id = intent.getIntExtra("product_id", 0);
+            Log.e("mmmmmmmm",product_id+"");
 
         }
 
@@ -105,31 +109,45 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
         binding.setLang(lang);
         binding.tab.setupWithViewPager(binding.pager);
         binding.recView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ProductDetailsAdapter(productDetailsModelList,this);
+        adapter = new ProductDetailsAdapter(productDetailsModelList, this);
         binding.recView.setAdapter(adapter);
 
-        sliderAdapter = new SliderAdapter(productImageModelList,this);
+        sliderAdapter = new SliderAdapter(productImageModelList, this);
         binding.pager.setAdapter(sliderAdapter);
+    /*    try {
 
+            Log.e("mmmmmmmmmmm", productModel.getUser_like() + "");
+            if (productModel.getUser_like() != null) {
+                binding.checkFavorite.setChecked(true);
+            }
+        } catch (Exception e) {
+            Log.e("ccccccccccc", productModel.getUser_like() + "");
 
+        }*/
+        binding.checkFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                like_dislike();
+            }
+        });
 
         binding.iconCopy.setOnClickListener(view -> {
 
             ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("label", productModel.getUser().getPhone_code()+productModel.getUser().getPhone());
+            ClipData clip = ClipData.newPlainText("label", productModel.getUser().getPhone_code() + productModel.getUser().getPhone());
             clipboard.setPrimaryClip(clip);
             Toast.makeText(this, R.string.copied, Toast.LENGTH_SHORT).show();
         });
 
         binding.flCall.setOnClickListener(view -> {
-            String phone = productModel.getUser().getPhone_code()+productModel.getUser().getPhone();
-            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+phone));
+            String phone = productModel.getUser().getPhone_code() + productModel.getUser().getPhone();
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
             startActivity(intent);
         });
 
         binding.iconWhatsApp.setOnClickListener(view -> {
-            String phone = productModel.getUser().getPhone_code()+productModel.getUser().getPhone();
-            String url = "https://api.whatsapp.com/send?phone="+phone;
+            String phone = productModel.getUser().getPhone_code() + productModel.getUser().getPhone();
+            String url = "https://api.whatsapp.com/send?phone=" + phone;
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);
@@ -137,46 +155,48 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
         getProductById();
     }
 
-    private void getProductById()
-    {
+    private void getProductById() {
 
         try {
-            String user_id ="";
-            if (userModel!=null)
-            {
+            String user_id = "";
+            if (userModel != null) {
                 user_id = String.valueOf(userModel.getUser().getId());
             }
 
             Api.getService(Tags.base_url)
-                    .getProductById(user_id,product_id)
+                    .getProductById(user_id, product_id)
                     .enqueue(new Callback<ProductModel>() {
                         @Override
                         public void onResponse(Call<ProductModel> call, Response<ProductModel> response) {
                             binding.progBar.setVisibility(View.GONE);
-                            if (response.isSuccessful() && response.body() != null ) {
-                               productModel = response.body();
-                               binding.setModel(productModel);
+                            if (response.isSuccessful() && response.body() != null) {
+                                productModel = response.body();
+                                binding.setModel(productModel);
 
-                               if (productModel.getProducts_images()!=null&&productModel.getProducts_images().size()>0){
-                                   binding.flNoSlider.setVisibility(View.GONE);
-                                   binding.flSlider.setVisibility(View.VISIBLE);
-                                   productDetailsModelList.addAll(productModel.getProduct_details());
-                                   adapter.notifyDataSetChanged();
-                               }else {
-                                   binding.flNoSlider.setVisibility(View.VISIBLE);
-                                   binding.flSlider.setVisibility(View.GONE);
-                               }
+                                if (productModel.getProduct_details() != null && productModel.getProduct_details().size() > 0) {
+
+                                    productDetailsModelList.addAll(productModel.getProduct_details());
+                                    adapter.notifyDataSetChanged();
+                                }
 
 
+                                if (productModel.getVedio() != null) {
+                                    productImageModelList.add(new ProductImageModel(0, productModel.getVedio(), "video"));
+                                }
+                                if (productModel.getProducts_images()!=null&&productModel.getProducts_images().size()>0){
+                                    binding.flNoSlider.setVisibility(View.GONE);
+                                    binding.flSlider.setVisibility(View.VISIBLE);
+                                    productImageModelList.addAll(productModel.getProducts_images());
 
-                               if (productModel.getVedio()!=null){
-                                   productImageModelList.add(new ProductImageModel(0,productModel.getVedio(),"video"));
-                               }
+                                    sliderAdapter.notifyDataSetChanged();
+                                }else {
+                                    binding.flNoSlider.setVisibility(View.VISIBLE);
+                                    binding.flSlider.setVisibility(View.GONE);
+                                }
 
-                               productImageModelList.addAll(productModel.getProducts_images());
 
 
-                               binding.scrollView.setVisibility(View.VISIBLE);
+                                binding.scrollView.setVisibility(View.VISIBLE);
                             } else {
                                 binding.progBar.setVisibility(View.GONE);
 
@@ -220,6 +240,66 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
         }
     }
 
+    public int like_dislike() {
+        if (userModel != null) {
+            try {
+                Log.e("llll", userModel.getUser().getToken());
+
+                Api.getService(Tags.base_url)
+                        .addFavoriteProduct(userModel.getUser().getToken(), productModel.getId() + "")
+                        .enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if (response.isSuccessful()) {
+                                    initView();
+
+                                } else {
+
+
+                                    if (response.code() == 500) {
+                                        Toast.makeText(ProductDetailsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+
+
+                                    } else {
+                                        Toast.makeText(ProductDetailsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+
+                                        try {
+
+                                            Log.e("error", response.code() + "_" + response.errorBody().string());
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                try {
+
+                                    if (t.getMessage() != null) {
+                                        Log.e("error", t.getMessage());
+                                        if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                            Toast.makeText(ProductDetailsActivity.this, R.string.something, Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(ProductDetailsActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                } catch (Exception e) {
+                                }
+                            }
+                        });
+            } catch (Exception e) {
+            }
+            return 1;
+        } else {
+            Common.CreateDialogAlert(ProductDetailsActivity.this, getString(R.string.please_sign_in_or_sign_up));
+            return 0;
+
+        }
+    }
+
 
     @Override
     public void back() {
@@ -231,9 +311,6 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
     public void onBackPressed() {
         back();
     }
-
-
-
 
 
 }

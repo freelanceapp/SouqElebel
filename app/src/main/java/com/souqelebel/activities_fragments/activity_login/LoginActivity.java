@@ -162,6 +162,7 @@ public class LoginActivity extends AppCompatActivity implements Listeners.LoginL
     public void setItemData(CountryModel countryModel) {
         dialog.dismiss();
         phone_code = countryModel.getDialCode();
+        binding.txtCode.setText(countryModel.getDialCode());
         binding.image.setImageResource(countryModel.getFlag());
     }
 

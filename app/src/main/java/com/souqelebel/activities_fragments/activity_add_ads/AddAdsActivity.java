@@ -448,6 +448,7 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
         RequestBody lng_part = Common.getRequestBodyText(String.valueOf(model.getLng()));
 
 
+
         Api.getService(Tags.base_url)
                 .addAdsWithoutVideoWithList(title_part,department_id_part,price_part,id_part,details_part,address_part,lat_part,lng_part,getMultipartImage(),model.getItemAddAdsList())
                 .enqueue(new Callback<ResponseBody>() {
@@ -466,6 +467,8 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
                             if (response.code() == 500) {
                                 Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                             }{
+                                Log.e("mmmmmmmmmm",response.code()+"__"+response.errorBody());
+
                                 Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -476,6 +479,7 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
                         try {
                             dialog.dismiss();
                             if (t.getMessage() != null) {
+                                Log.e("mmmmmmmmmm",t.getMessage()+"__");
 
                                 if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
                                     Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
@@ -579,6 +583,8 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
                             if (response.code() == 500) {
                                 Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                             }{
+                                Log.e("bbbbbbbb",response.code()+"__"+response.errorBody());
+
                                 Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
                             }
                         }
