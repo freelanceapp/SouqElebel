@@ -263,7 +263,7 @@ public interface Service {
                                                @Part("google_long") RequestBody google_long,
                                                @Part MultipartBody.Part vedio,
                                                @Part List<MultipartBody.Part> images,
-                                               @PartMap() Map<String,String> map
+                                               @PartMap() Map<String,RequestBody> map
     );
 
 
@@ -292,7 +292,7 @@ public interface Service {
                                                   @Part("google_lat") RequestBody google_lat,
                                                   @Part("google_long") RequestBody google_long,
                                                   @Part List<MultipartBody.Part> image,
-                                                  @PartMap() Map<String,String> map
+                                                  @PartMap() Map<String,RequestBody> map
 
     );
 

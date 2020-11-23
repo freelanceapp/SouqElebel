@@ -449,11 +449,11 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
         RequestBody lat_part = Common.getRequestBodyText(String.valueOf(model.getLat()));
         RequestBody lng_part = Common.getRequestBodyText(String.valueOf(model.getLng()));
 
-        Map<String,String> map = new HashMap<>();
+        Map<String,RequestBody> map = new HashMap<>();
         for (int index=0;index<model.getItemAddAdsList().size();index++){
-            map.put("product_details["+index+"][title]",model.getItemAddAdsList().get(index).getTitle());
-            map.put("product_details["+index+"][icon]",model.getItemAddAdsList().get(index).getIcon());
-            map.put("product_details["+index+"][content]",model.getItemAddAdsList().get(index).getContent());
+            map.put("product_details["+index+"][title]",Common.getRequestBodyText(model.getItemAddAdsList().get(index).getTitle()));
+            map.put("product_details["+index+"][icon]",Common.getRequestBodyText(model.getItemAddAdsList().get(index).getIcon()));
+            map.put("product_details["+index+"][content]",Common.getRequestBodyText(model.getItemAddAdsList().get(index).getContent()));
 
         }
 
@@ -631,11 +631,11 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
         RequestBody lat_part = Common.getRequestBodyText(String.valueOf(model.getLat()));
         RequestBody lng_part = Common.getRequestBodyText(String.valueOf(model.getLng()));
         MultipartBody.Part video = Common.getMultiPartVideo(this, videoUri, "vedio");
-        Map<String,String> map = new HashMap<>();
+        Map<String,RequestBody> map = new HashMap<>();
         for (int index=0;index<model.getItemAddAdsList().size();index++){
-            map.put("product_details["+index+"][title]",model.getItemAddAdsList().get(index).getTitle());
-            map.put("product_details["+index+"][icon]",model.getItemAddAdsList().get(index).getIcon());
-            map.put("product_details["+index+"][content]",model.getItemAddAdsList().get(index).getContent());
+            map.put("product_details["+index+"][title]",Common.getRequestBodyText(model.getItemAddAdsList().get(index).getTitle()));
+            map.put("product_details["+index+"][icon]",Common.getRequestBodyText(model.getItemAddAdsList().get(index).getIcon()));
+            map.put("product_details["+index+"][content]",Common.getRequestBodyText(model.getItemAddAdsList().get(index).getContent()));
 
         }
 
