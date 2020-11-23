@@ -21,6 +21,7 @@ import com.souqelebel.models.Slider_Model;
 import com.souqelebel.models.UserModel;
 
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -34,6 +35,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 import retrofit2.http.Query;
 
 public interface Service {
@@ -261,7 +263,7 @@ public interface Service {
                                                @Part("google_long") RequestBody google_long,
                                                @Part MultipartBody.Part vedio,
                                                @Part List<MultipartBody.Part> images,
-                                               @Part("product_details[]") List<ItemAddAds> itemAddAds
+                                               @PartMap() Map<String,String> map
     );
 
 
@@ -290,7 +292,7 @@ public interface Service {
                                                   @Part("google_lat") RequestBody google_lat,
                                                   @Part("google_long") RequestBody google_long,
                                                   @Part List<MultipartBody.Part> image,
-                                                  @Part("product_details[]") List<ItemAddAds> itemAddAds
+                                                  @PartMap() Map<String,String> map
 
     );
 

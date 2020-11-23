@@ -103,8 +103,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.paperdb.Paper;
 import okhttp3.MultipartBody;
@@ -447,10 +449,17 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
         RequestBody lat_part = Common.getRequestBodyText(String.valueOf(model.getLat()));
         RequestBody lng_part = Common.getRequestBodyText(String.valueOf(model.getLng()));
 
+        Map<String,String> map = new HashMap<>();
+        for (int index=0;index<model.getItemAddAdsList().size();index++){
+            map.put("product_details["+index+"][title]",model.getItemAddAdsList().get(index).getTitle());
+            map.put("product_details["+index+"][icon]",model.getItemAddAdsList().get(index).getIcon());
+            map.put("product_details["+index+"][content]",model.getItemAddAdsList().get(index).getContent());
+
+        }
 
 
         Api.getService(Tags.base_url)
-                .addAdsWithoutVideoWithList(title_part,department_id_part,price_part,id_part,details_part,address_part,lat_part,lng_part,getMultipartImage(),model.getItemAddAdsList())
+                .addAdsWithoutVideoWithList(title_part,department_id_part,price_part,id_part,details_part,address_part,lat_part,lng_part,getMultipartImage(),map)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -622,10 +631,16 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
         RequestBody lat_part = Common.getRequestBodyText(String.valueOf(model.getLat()));
         RequestBody lng_part = Common.getRequestBodyText(String.valueOf(model.getLng()));
         MultipartBody.Part video = Common.getMultiPartVideo(this, videoUri, "vedio");
+        Map<String,String> map = new HashMap<>();
+        for (int index=0;index<model.getItemAddAdsList().size();index++){
+            map.put("product_details["+index+"][title]",model.getItemAddAdsList().get(index).getTitle());
+            map.put("product_details["+index+"][icon]",model.getItemAddAdsList().get(index).getIcon());
+            map.put("product_details["+index+"][content]",model.getItemAddAdsList().get(index).getContent());
 
+        }
 
         Api.getService(Tags.base_url)
-                .addAdsWithVideoWithList(title_part,department_id_part,price_part,id_part,details_part,address_part,lat_part,lng_part,video,getMultipartImage(),model.getItemAddAdsList())
+                .addAdsWithVideoWithList(title_part,department_id_part,price_part,id_part,details_part,address_part,lat_part,lng_part,video,getMultipartImage(),map)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
