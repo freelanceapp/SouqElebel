@@ -1,6 +1,7 @@
 package com.souqelebel.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -13,6 +14,8 @@ import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Main;
 import com.souqelebel.databinding.ProductRowBinding;
 import com.souqelebel.models.ProductModel;
+import com.souqelebel.tags.Tags;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -51,7 +54,12 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             });
 
+if (list.get(myHolder.getAdapterPosition()).getProducts_images().size()>0){
+    Picasso.get().load(Uri.parse(Tags.IMAGE_URL + list.get(myHolder.getAdapterPosition()).getProducts_images().get(0).getName())).fit().into(myHolder.binding.imageAds);
 
+}else {
+
+}
 
         }
 

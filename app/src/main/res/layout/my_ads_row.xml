@@ -32,7 +32,7 @@
             android:orientation="horizontal">
 
             <com.makeramen.roundedimageview.RoundedImageView
-                android:id="@+id/imageads"
+                product_image="@{model.image}"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -68,11 +68,11 @@
                         android:textStyle="bold"
                         />
                     <ImageView
-                        android:id="@+id/imageFavorite"
+                        android:id="@+id/imageDelete"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_fill_heart"
-                        app:tint="@color/colorPrimary"
+                        android:src="@drawable/ic_close"
+                        app:tint="@color/red"
                         />
                 </LinearLayout>
 

@@ -1,30 +1,33 @@
-package com.souqelebel.activities_fragments.activity_home.fragments;
+package com.souqelebel.activity_my_ads;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.souqelebel.R;
+import com.souqelebel.activities_fragments.activity_edit_profile.EditProfileActivity;
 import com.souqelebel.activities_fragments.activity_home.HomeActivity;
-
 import com.souqelebel.activities_fragments.activity_product_details.ProductDetailsActivity;
 import com.souqelebel.adapters.FavoriteAdapter;
+import com.souqelebel.adapters.MyAdsAdapter;
+import com.souqelebel.databinding.ActivityClientProfileBinding;
+import com.souqelebel.databinding.ActivityMyAdsBinding;
 import com.souqelebel.databinding.FragmentFavoriteBinding;
+import com.souqelebel.interfaces.Listeners;
+import com.souqelebel.language.Language;
 import com.souqelebel.models.FavoriteDataModel;
 import com.souqelebel.models.FavoriteModel;
+import com.souqelebel.models.ProductDataModel;
 import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
@@ -35,6 +38,8 @@ import com.souqelebel.tags.Tags;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 import io.paperdb.Paper;
 import okhttp3.ResponseBody;
@@ -42,58 +47,57 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Fragment_Favorite extends Fragment {
-
-    private HomeActivity activity;
-    private FragmentFavoriteBinding binding;
+public class MyAdsActivity extends AppCompatActivity implements Listeners.BackListener {
+    private ActivityMyAdsBinding binding;
     private Preferences preferences;
     private UserModel userModel;
     private String lang;
-    private List<FavoriteModel> favoriteModelList;
-    private FavoriteAdapter adapter;
-
-    public static Fragment_Favorite newInstance() {
-        return new Fragment_Favorite();
-    }
-
-    @Nullable
+    private List<ProductModel> productModelList;
+    private MyAdsAdapter adapter;
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_favorite, container, false);
-        initView();
-        return binding.getRoot();
+    protected void attachBaseContext(Context newBase) {
+        Paper.init(newBase);
+        super.attachBaseContext(Language.updateResources(newBase, Paper.book().read("lang", "ar")));
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_my_ads);
+        initView();
+    }
 
 
     private void initView() {
-        favoriteModelList = new ArrayList<>();
-        activity = (HomeActivity) getActivity();
-        Paper.init(activity);
+        productModelList = new ArrayList<>();
+        Paper.init(this);
         lang = Paper.book().read("lang", "ar");
         binding.setLang(lang);
         preferences = Preferences.getInstance();
-        userModel = preferences.getUserData(activity);
-        binding.progBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(activity, R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
-        binding.recView.setLayoutManager(new LinearLayoutManager(activity));
-        adapter = new FavoriteAdapter(favoriteModelList,activity,this);
+        userModel = preferences.getUserData(this);
+        binding.progBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+        binding.recView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new MyAdsAdapter(productModelList,this);
         binding.recView.setAdapter(adapter);
-        getFavorite();
+        getMyAds();
+
     }
 
-    private void getFavorite()
+    private void getMyAds()
     {
-        try {
             Api.getService(Tags.base_url)
-                    .getMyFavoriteProducts( userModel.getUser().getToken())
-                    .enqueue(new Callback<FavoriteDataModel>() {
+                    .getMyAds(userModel.getUser().getId(),"off",1)
+                    .enqueue(new Callback<ProductDataModel>() {
                         @Override
-                        public void onResponse(Call<FavoriteDataModel> call, Response<FavoriteDataModel> response) {
+                        public void onResponse(Call<ProductDataModel> call, Response<ProductDataModel> response) {
                             binding.progBar.setVisibility(View.GONE);
+
                             if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-                                favoriteModelList.clear();
-                                favoriteModelList.addAll(response.body().getData());
-                                if (favoriteModelList.size() > 0) {
+                                productModelList.clear();
+                                productModelList.addAll(response.body().getData());
+
+
+                                if (productModelList.size() > 0) {
 
                                     adapter.notifyDataSetChanged();
 
@@ -104,11 +108,11 @@ public class Fragment_Favorite extends Fragment {
                                 }
                             } else {
                                 if (response.code() == 500) {
-                                    Toast.makeText(activity, "Server Error", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MyAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
 
 
                                 } else {
-                                    Toast.makeText(activity, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MyAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
 
                                     try {
 
@@ -121,16 +125,16 @@ public class Fragment_Favorite extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<FavoriteDataModel> call, Throwable t) {
+                        public void onFailure(Call<ProductDataModel> call, Throwable t) {
                             try {
                                 binding.progBar.setVisibility(View.GONE);
 
                                 if (t.getMessage() != null) {
                                     Log.e("error", t.getMessage());
                                     if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
-                                        Toast.makeText(activity, R.string.something, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MyAdsActivity.this, R.string.something, Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(activity, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MyAdsActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
@@ -138,34 +142,38 @@ public class Fragment_Favorite extends Fragment {
                             }
                         }
                     });
-        } catch (Exception e) {
 
-        }
     }
 
 
-    public void setProductItemData(FavoriteModel favoriteModel) {
+    public void setProductItemData(ProductModel productModel) {
 
-        Intent intent = new Intent(activity, ProductDetailsActivity.class);
-        intent.putExtra("product_id",favoriteModel.getProduct_id());
+        Intent intent = new Intent(MyAdsActivity.this, ProductDetailsActivity.class);
+        intent.putExtra("product_id",productModel.getId());
 
         startActivity(intent);
     }
-    public void disLike(FavoriteModel favoriteModel, int adapterPosition) {
-        ProgressDialog dialog = Common.createProgressDialog(activity,getString(R.string.wait));
+    @Override
+    public void back() {
+        finish();
+    }
+
+
+    public void deleteAds(ProductModel productModel, int adapterPosition) {
+        ProgressDialog dialog = Common.createProgressDialog(MyAdsActivity.this,getString(R.string.wait));
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
 
         Api.getService(Tags.base_url)
-                .favoriteAction(userModel.getUser().getToken(),favoriteModel.getProduct_id())
+                .deleteAds(userModel.getUser().getId(),productModel.getId())
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         dialog.dismiss();
                         if (response.isSuccessful()) {
-                            favoriteModelList.remove(adapterPosition);
-                            initView();
-                            if (favoriteModelList.size()>0){
+                            productModelList.remove(adapterPosition);
+                            getMyAds();
+                            if (productModelList.size()>0){
                                 binding.tvNoData.setVisibility(View.GONE);
                             }else {
                                 binding.tvNoData.setVisibility(View.VISIBLE);
@@ -174,11 +182,11 @@ public class Fragment_Favorite extends Fragment {
                         } else {
                             dialog.dismiss();
                             if (response.code() == 500) {
-                                Toast.makeText(activity, "Server Error", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MyAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
 
 
                             } else {
-                                Toast.makeText(activity, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MyAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
 
                                 try {
 
@@ -197,9 +205,9 @@ public class Fragment_Favorite extends Fragment {
                             if (t.getMessage() != null) {
                                 Log.e("error", t.getMessage());
                                 if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
-                                    Toast.makeText(activity, R.string.something, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MyAdsActivity.this, R.string.something, Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(activity, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MyAdsActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -210,9 +218,6 @@ public class Fragment_Favorite extends Fragment {
 
     }
 
-    @Override
-    public void onResume() {
-        getFavorite();
-        super.onResume();
-    }
+
 }
+

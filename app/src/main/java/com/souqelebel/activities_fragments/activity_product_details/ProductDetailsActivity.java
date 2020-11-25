@@ -114,16 +114,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
 
         sliderAdapter = new SliderAdapter(productImageModelList, this);
         binding.pager.setAdapter(sliderAdapter);
-    /*    try {
 
-            Log.e("mmmmmmmmmmm", productModel.getUser_like() + "");
-            if (productModel.getUser_like() != null) {
-                binding.checkFavorite.setChecked(true);
-            }
-        } catch (Exception e) {
-            Log.e("ccccccccccc", productModel.getUser_like() + "");
-
-        }*/
         binding.checkFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,6 +143,12 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
             i.setData(Uri.parse(url));
             startActivity(i);
         });
+        binding.imgWarning.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addReport();
+            }
+        });
         getProductById();
     }
 
@@ -176,9 +173,14 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
                                 if (productModel.getProduct_details() != null && productModel.getProduct_details().size() > 0) {
 
                                     productDetailsModelList.addAll(productModel.getProduct_details());
+
                                     adapter.notifyDataSetChanged();
                                 }
 
+                                if (productModel.getUser_like()!=null){
+                                    binding.checkFavorite.setChecked(true);
+
+                                }
 
                                 if (productModel.getVedio() != null) {
                                     productImageModelList.add(new ProductImageModel(0, productModel.getVedio(), "video"));
@@ -253,6 +255,64 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
                                 if (response.isSuccessful()) {
                                     initView();
 
+                                } else {
+
+
+                                    if (response.code() == 500) {
+                                        Toast.makeText(ProductDetailsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+
+
+                                    } else {
+                                        Toast.makeText(ProductDetailsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+
+                                        try {
+
+                                            Log.e("error", response.code() + "_" + response.errorBody().string());
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                try {
+
+                                    if (t.getMessage() != null) {
+                                        Log.e("error", t.getMessage());
+                                        if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                            Toast.makeText(ProductDetailsActivity.this, R.string.something, Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(ProductDetailsActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                } catch (Exception e) {
+                                }
+                            }
+                        });
+            } catch (Exception e) {
+            }
+            return 1;
+        } else {
+            Common.CreateDialogAlert(ProductDetailsActivity.this, getString(R.string.please_sign_in_or_sign_up));
+            return 0;
+
+        }
+    }
+    public int addReport() {
+        if (userModel != null) {
+            try {
+                Log.e("llll", userModel.getUser().getToken());
+
+                Api.getService(Tags.base_url)
+                        .addReport(userModel.getUser().getId(), productModel.getId() ,"هذا منشور غير جيد")
+                        .enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if (response.isSuccessful()) {
+                                    Common.CreateDialogAlert(ProductDetailsActivity.this, getString(R.string.rep));
                                 } else {
 
 

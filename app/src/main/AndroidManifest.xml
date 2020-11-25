@@ -28,7 +28,10 @@
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             />
-
+        <activity android:name=".activity_my_ads.MyAdsActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            />
         <service
             android:name=".notifications.FireBaseMessaging"
             android:exported="false">

@@ -104,6 +104,12 @@ public class Fragment_Main extends Fragment {
         getMainCategory();
     }
 
+    @Override
+    public void onResume() {
+        getMainCategory();
+        super.onResume();
+    }
+
     private void getMainCategory() {
         Api.getService(Tags.base_url)
                 .getMainCategory_Products()
@@ -185,11 +191,7 @@ public class Fragment_Main extends Fragment {
 
 
     public void setProductItemData(ProductModel productModel) {
-      /*  String like="";
-        if (productModel.getUser_like()!=null){
 
-            like="t"
-        }*/
         Intent intent = new Intent(activity,ProductDetailsActivity.class);
         intent.putExtra("product_id",productModel.getId());
 
