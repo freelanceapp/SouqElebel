@@ -165,8 +165,8 @@ public interface Service {
     @FormUrlEncoded
     @POST("api/addReport")
     Call<ResponseBody> addReport(@Field("user_id") int  user_id,
-                                 @Field("product_id") int product_id,
-                                  @Field("title") String title);
+                                 @Field("product_id") int product_id
+    );
     @FormUrlEncoded
     @POST("api/favorite-action")
     Call<ResponseBody> favoriteAction(@Header("Authorization") String Authorization,

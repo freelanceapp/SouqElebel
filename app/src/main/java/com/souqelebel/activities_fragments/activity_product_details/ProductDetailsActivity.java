@@ -158,6 +158,8 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
     private void getProductById() {
 
         try {
+            binding.scrollView.setVisibility(View.GONE);
+            binding.progBar.setVisibility(View.VISIBLE);
             String user_id = "";
             if (userModel != null) {
                 user_id = String.valueOf(userModel.getUser().getId());
@@ -171,6 +173,14 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
                             binding.progBar.setVisibility(View.GONE);
                             if (response.isSuccessful() && response.body() != null) {
                                 productModel = response.body();
+                                if (productModel!=null){
+                                    if (productModel.getBlock_check().equals("yes")){
+                                        binding.imgWarning.setColorFilter(ContextCompat.getColor(ProductDetailsActivity.this,R.color.colorPrimary));
+                                    }else {
+                                        binding.imgWarning.setColorFilter(ContextCompat.getColor(ProductDetailsActivity.this,R.color.gray4));
+
+                                    }
+                                }
                                 binding.setModel(productModel);
 
                                 if (productModel.getProduct_details() != null && productModel.getProduct_details().size() > 0) {
@@ -307,18 +317,22 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
     public int addReport() {
         if (userModel != null) {
             try {
-                Log.e("llll", userModel.getUser().getToken());
-
+                ProgressDialog dialog = Common.createProgressDialog(this,getString(R.string.wait));
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setCancelable(false);
+                dialog.show();
                 Api.getService(Tags.base_url)
-                        .addReport(userModel.getUser().getId(), productModel.getId() ,"هذا منشور غير جيد")
+                        .addReport(userModel.getUser().getId(), productModel.getId() )
                         .enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                dialog.dismiss();
                                 if (response.isSuccessful()) {
-                                    Common.CreateDialogAlert(ProductDetailsActivity.this, getString(R.string.rep));
+                                    getProductById();
+                                    //Common.CreateDialogAlert(ProductDetailsActivity.this, getString(R.string.rep));
                                 } else {
 
-
+                                    dialog.dismiss();
                                     if (response.code() == 500) {
                                         Toast.makeText(ProductDetailsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
 
@@ -339,7 +353,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
                                 try {
-
+                                    dialog.dismiss();
                                     if (t.getMessage() != null) {
                                         Log.e("error", t.getMessage());
                                         if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {

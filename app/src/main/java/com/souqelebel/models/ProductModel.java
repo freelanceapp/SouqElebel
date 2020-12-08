@@ -16,6 +16,7 @@ public class ProductModel implements Serializable {
     private String address;
     private String vedio;
     private String created_at;
+    private String block_check="";
     private UserModel.User user;
     private MainCategoryModel department_fk;
     private List<ProductImageModel> products_images;
@@ -93,6 +94,10 @@ public class ProductModel implements Serializable {
 
     public void setUser_like(UserLike user_like) {
         this.user_like = user_like;
+    }
+
+    public String getBlock_check() {
+        return block_check;
     }
 
     public class UserLike implements Serializable {
