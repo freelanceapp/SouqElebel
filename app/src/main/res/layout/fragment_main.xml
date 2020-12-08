@@ -40,42 +40,9 @@
                 android:orientation="vertical">
 
                 <FrameLayout
-                    android:id="@+id/flCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recViewCategory"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp" />
-
-
-
-                    <ProgressBar
-                        android:id="@+id/progBarCategory"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_gravity="center"
-                        />
-
-                    <TextView
-                        android:id="@+id/tvNoData"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:textSize="17sp"
-                        android:layout_gravity="center"
-                        android:text="@string/no_data_found"
-                        android:visibility="gone"
-                        />
-                </FrameLayout>
-
-                <FrameLayout
                     android:id="@+id/flProducts"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
                     >
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recView"
@@ -84,6 +51,12 @@
 
                         />
 
+                    <ProgressBar
+                        android:id="@+id/progBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        />
 
                     <LinearLayout
                         android:id="@+id/llNoData"

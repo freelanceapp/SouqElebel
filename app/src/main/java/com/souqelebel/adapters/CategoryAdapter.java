@@ -14,6 +14,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.souqelebel.R;
+import com.souqelebel.activities_fragments.activity_home.HomeActivity;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Main;
 import com.souqelebel.databinding.MainCategoryRowBinding;
 import com.souqelebel.models.MainCategoryModel;
@@ -29,15 +30,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<MainCategoryModel> list;
     private Context context;
     private LayoutInflater inflater;
-    private Fragment_Main fragment_main;
     private int selectedPos = 0;
     private int oldPos = 0;
+    private HomeActivity activity;
 
-    public CategoryAdapter(List<MainCategoryModel> list, Fragment_Main fragment_main, Context context) {
+    public CategoryAdapter(List<MainCategoryModel> list, Context context) {
         this.list = list;
         this.context = context;
         inflater = LayoutInflater.from(context);
-        this.fragment_main = fragment_main;
+        activity = (HomeActivity) context;
 
 
     }
@@ -69,7 +70,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
         myHolder.itemView.setOnClickListener(view -> {
             MainCategoryModel model = list.get(myHolder.getAdapterPosition());
-            fragment_main.setItemData(model);
+            activity.setItemData(model);
 
             MainCategoryModel model1 = list.get(oldPos);
             model1.setSelected(false);

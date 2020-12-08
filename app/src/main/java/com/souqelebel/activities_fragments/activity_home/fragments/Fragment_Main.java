@@ -56,9 +56,7 @@ public class Fragment_Main extends Fragment {
     private Preferences preferences;
     private String lang;
     private UserModel userModel;
-    private List<MainCategoryModel> categoryModelList;
     private ProductAdapter productAdapter;
-    private CategoryAdapter categoryAdapter;
     private LinearLayoutManager manager;
     private List<ProductModel> productModelList;
 
@@ -88,99 +86,30 @@ public class Fragment_Main extends Fragment {
         userModel = preferences.getUserData(activity);
         Paper.init(activity);
         lang = Paper.book().read("lang", Locale.getDefault().getLanguage());
-        categoryModelList = new ArrayList<>();
         productModelList = new ArrayList<>();
         manager = new LinearLayoutManager(activity);
-        categoryAdapter = new CategoryAdapter(categoryModelList, this, activity);
-        binding.recViewCategory.setLayoutManager(new LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false));
 
-        binding.recViewCategory.setAdapter(categoryAdapter);
 
         productAdapter = new ProductAdapter(productModelList,activity,this);
         binding.recView.setLayoutManager(manager);
         binding.recView.setAdapter(productAdapter);
 
 
-        getMainCategory();
-    }
-
-    private void getMainCategory() {
-        Api.getService(Tags.base_url)
-                .getMainCategory_Products()
-                .enqueue(new Callback<MainCategoryDataModel>() {
-                    @Override
-                    public void onResponse(Call<MainCategoryDataModel> call, Response<MainCategoryDataModel> response) {
-                        binding.progBarCategory.setVisibility(View.GONE);
-                        if (response.isSuccessful()) {
-                            categoryModelList.clear();
-                            categoryModelList.addAll(response.body().getData());
-
-                            if (categoryModelList.size() > 0) {
-                                binding.tvNoData.setVisibility(View.GONE);
-                                MainCategoryModel model = categoryModelList.get(0);
-                                model.setSelected(true);
-                                categoryModelList.set(0,model);
-                                categoryAdapter.notifyDataSetChanged();
-
-                                setItemData(categoryModelList.get(0));
-                            } else {
-                                binding.tvNoData.setVisibility(View.VISIBLE);
-
-                            }
-
-
-                        } else {
-                            binding.progBarCategory.setVisibility(View.GONE);
-
-                            try {
-                                Log.e("errorNotCode", response.code() + "__" + response.errorBody().string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            if (response.code() == 500) {
-                                Toast.makeText(activity, "Server Error", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(activity, getString(R.string.failed), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MainCategoryDataModel> call, Throwable t) {
-                        try {
-                            binding.progBarCategory.setVisibility(View.GONE);
-
-                            if (t.getMessage() != null) {
-                                Log.e("error_not_code", t.getMessage() + "__");
-
-                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
-                                    Toast.makeText(activity, getString(R.string.something), Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(activity, getString(R.string.failed), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        } catch (Exception e) {
-                            Log.e("Error", e.getMessage() + "__");
-                        }
-                    }
-                });
     }
 
 
-
-    public void setItemData(MainCategoryModel mainCategoryModel) {
-        productModelList.clear();
+    public void updateData(List<ProductModel> productModelList){
+        binding.progBar.setVisibility(View.GONE);
+        this.productModelList.clear();
         productAdapter.notifyDataSetChanged();
-        productModelList.addAll(mainCategoryModel.getProducts());
+        this.productModelList.addAll(productModelList);
         productAdapter.notifyDataSetChanged();
-        if (productModelList.size()>0){
+        if (this.productModelList.size()>0){
             binding.llNoData.setVisibility(View.GONE);
         }else {
             binding.llNoData.setVisibility(View.VISIBLE);
 
         }
-
     }
 
 

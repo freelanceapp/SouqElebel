@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -12,11 +13,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Favorite;
@@ -26,8 +30,11 @@ import com.souqelebel.activities_fragments.activity_home.fragments.Fragment_Prof
 import com.souqelebel.activities_fragments.activity_login.LoginActivity;
 import com.souqelebel.activities_fragments.activity_notification.NotificationActivity;
 import com.souqelebel.activities_fragments.activity_search.SearchActivity;
+import com.souqelebel.adapters.CategoryAdapter;
 import com.souqelebel.databinding.ActivityHomeBinding;
 import com.souqelebel.language.Language;
+import com.souqelebel.models.MainCategoryDataModel;
+import com.souqelebel.models.MainCategoryModel;
 import com.souqelebel.models.NotFireModel;
 import com.souqelebel.models.NotificationCount;
 import com.souqelebel.models.UserModel;
@@ -43,6 +50,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.paperdb.Paper;
@@ -62,6 +70,10 @@ public class HomeActivity extends AppCompatActivity {
     private UserModel userModel;
     private String lang;
     private String token;
+    private ActionBarDrawerToggle toggle;
+    private List<MainCategoryModel> categoryModelList;
+    private CategoryAdapter categoryAdapter;
+
 
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
@@ -85,8 +97,9 @@ public class HomeActivity extends AppCompatActivity {
         Paper.init(this);
         lang = Paper.book().read("lang", "ar");
         binding.setLang(lang);
-
-
+        toggle = new ActionBarDrawerToggle(this,binding.drawerLayout,binding.toolbar,R.string.open,R.string.close);
+        toggle.syncState();
+        binding.toolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         binding.flNotification.setOnClickListener(view -> {
 
 
@@ -100,6 +113,14 @@ public class HomeActivity extends AppCompatActivity {
             }
 
         });
+        binding.setModel(userModel);
+
+        categoryModelList = new ArrayList<>();
+        categoryAdapter = new CategoryAdapter(categoryModelList, this);
+        binding.recView.setLayoutManager(new LinearLayoutManager(this));
+
+        binding.recView.setAdapter(categoryAdapter);
+
 
         binding.search.setOnClickListener(view -> {
             Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
@@ -149,7 +170,82 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        getMainCategory();
+
     }
+
+    private void getMainCategory() {
+        Api.getService(Tags.base_url)
+                .getMainCategory_Products()
+                .enqueue(new Callback<MainCategoryDataModel>() {
+                    @Override
+                    public void onResponse(Call<MainCategoryDataModel> call, Response<MainCategoryDataModel> response) {
+                        binding.progBar.setVisibility(View.GONE);
+                        if (response.isSuccessful()) {
+                            categoryModelList.clear();
+                            categoryModelList.addAll(response.body().getData());
+
+                            if (categoryModelList.size() > 0) {
+                                binding.tvNoData.setVisibility(View.GONE);
+                                MainCategoryModel model = categoryModelList.get(0);
+                                model.setSelected(true);
+                                categoryModelList.set(0,model);
+                                categoryAdapter.notifyDataSetChanged();
+
+                                setItemData(categoryModelList.get(0));
+                            } else {
+                                binding.tvNoData.setVisibility(View.VISIBLE);
+
+                            }
+
+
+                        } else {
+                            binding.progBar.setVisibility(View.GONE);
+
+                            try {
+                                Log.e("errorNotCode", response.code() + "__" + response.errorBody().string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (response.code() == 500) {
+                                Toast.makeText(HomeActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(HomeActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MainCategoryDataModel> call, Throwable t) {
+                        try {
+                            binding.progBar.setVisibility(View.GONE);
+
+                            if (t.getMessage() != null) {
+                                Log.e("error_not_code", t.getMessage() + "__");
+
+                                if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
+                                    Toast.makeText(HomeActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(HomeActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("Error", e.getMessage() + "__");
+                        }
+                    }
+                });
+    }
+
+
+
+    public void setItemData(MainCategoryModel mainCategoryModel) {
+       if (fragment_main!=null&&fragment_main.isAdded()){
+           fragment_main.updateData(mainCategoryModel.getProducts());
+       }
+
+    }
+
 
     private void getNotificationCount() {
         Api.getService(Tags.base_url)
@@ -262,7 +358,6 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
         }
     }
-
 
     public void displayFragmentProfile() {
 
