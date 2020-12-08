@@ -99,6 +99,9 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
 
 
     private void initView() {
+
+
+
         productImageModelList = new ArrayList<>();
         productDetailsModelList = new ArrayList<>();
         Paper.init(this);
