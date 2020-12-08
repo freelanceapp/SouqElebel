@@ -25,6 +25,8 @@ import com.souqelebel.adapters.FavoriteAdapter;
 import com.souqelebel.databinding.FragmentFavoriteBinding;
 import com.souqelebel.models.FavoriteDataModel;
 import com.souqelebel.models.FavoriteModel;
+import com.souqelebel.models.MainCategoryModel;
+import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.ProductModel;
 import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
@@ -81,7 +83,7 @@ public class Fragment_Favorite extends Fragment {
         getFavorite();
     }
 
-    private void getFavorite()
+    public void getFavorite()
     {
         try {
             Api.getService(Tags.base_url)
@@ -142,7 +144,13 @@ public class Fragment_Favorite extends Fragment {
 
         }
     }
+    public void setProductItemData(FavoriteModel favoriteModel) {
 
+        Intent intent = new Intent(activity, ProductDetailsActivity.class);
+        intent.putExtra("product_id",favoriteModel.getId());
+
+        startActivity(intent);
+    }
 
     public void setProductItemData(FavoriteModel favoriteModel) {
 

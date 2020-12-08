@@ -299,6 +299,7 @@ public class HomeActivity extends AppCompatActivity {
             updateHomUi();
             if (fragment_main == null) {
                 fragment_main = Fragment_Main.newInstance();
+                fragment_main.getMainCategory();
             }
 
 
@@ -329,9 +330,11 @@ public class HomeActivity extends AppCompatActivity {
     public void displayFragmentFavorite() {
 
         try {
+
             updateFavoriteUi();
             if (fragment_favorite == null) {
                 fragment_favorite = Fragment_Favorite.newInstance();
+                fragment_favorite.getFavorite();
             }
 
 
