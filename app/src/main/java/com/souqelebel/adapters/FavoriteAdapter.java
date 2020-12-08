@@ -2,6 +2,7 @@ package com.souqelebel.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -18,6 +19,8 @@ import com.souqelebel.databinding.ProductFavoriteRowBinding;
 import com.souqelebel.databinding.ProductRowBinding;
 import com.souqelebel.models.FavoriteModel;
 import com.souqelebel.models.ProductModel;
+import com.souqelebel.tags.Tags;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -57,9 +60,19 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
 
             myHolder.itemView.setOnClickListener(view -> {
-                Intent intent=new Intent(context, ProductDetailsActivity.class);
-                context.startActivity(intent);
+                if (fragment instanceof Fragment_Favorite) {
+
+                    Fragment_Favorite fragment_favorite = (Fragment_Favorite) fragment;
+                    fragment_favorite.setProductItemData(list.get(myHolder.getAdapterPosition()));
+                }
             });
+            if (list.get(myHolder.getAdapterPosition()).getProduct().getProducts_images().size()>0){
+                Picasso.get().load(Uri.parse(Tags.IMAGE_URL + list.get(myHolder.getAdapterPosition()).getProduct().getProducts_images().get(0).getName())).fit().into(myHolder.binding.imageads);
+
+            }else {
+
+            }
+
 
         }
 

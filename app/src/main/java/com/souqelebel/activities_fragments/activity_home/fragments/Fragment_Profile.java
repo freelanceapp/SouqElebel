@@ -18,6 +18,7 @@ import com.souqelebel.R;
 import com.souqelebel.activities_fragments.activity_about_app.AboutAppActivity;
 import com.souqelebel.activities_fragments.activity_edit_profile.EditProfileActivity;
 import com.souqelebel.activities_fragments.activity_home.HomeActivity;
+import com.souqelebel.activity_my_ads.MyAdsActivity;
 import com.souqelebel.databinding.FragmentProfileBinding;
 import com.souqelebel.interfaces.Listeners;
 import com.souqelebel.models.SettingModel;
@@ -74,6 +75,13 @@ public class Fragment_Profile extends Fragment {
         binding.flEditProfile.setOnClickListener(view -> {
             Intent intent = new Intent(activity,EditProfileActivity.class);
             startActivityForResult(intent,100);
+        });
+        binding.frMyAds.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(activity, MyAdsActivity.class);
+                startActivity(intent);
+            }
         });
 
     }

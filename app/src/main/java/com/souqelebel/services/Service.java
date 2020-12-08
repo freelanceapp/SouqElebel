@@ -20,6 +20,8 @@ import com.souqelebel.models.SettingModel;
 import com.souqelebel.models.Slider_Model;
 import com.souqelebel.models.UserModel;
 
+import org.androidannotations.annotations.rest.Post;
+
 import java.util.List;
 import java.util.Map;
 
@@ -156,12 +158,28 @@ public interface Service {
     Call<BankDataModel> getBanks();
 
     @FormUrlEncoded
+    @POST("api/deleteProduct")
+    Call<ResponseBody> deleteAds(@Field("user_id") int  user_id,
+                                      @Field("product_id") int product_id);
+
+    @FormUrlEncoded
+    @POST("api/addReport")
+    Call<ResponseBody> addReport(@Field("user_id") int  user_id,
+                                 @Field("product_id") int product_id,
+                                  @Field("title") String title);
+    @FormUrlEncoded
     @POST("api/favorite-action")
     Call<ResponseBody> favoriteAction(@Header("Authorization") String Authorization,
                                       @Field("product_id") int product_id);
-
     @GET("api/my-favorites")
     Call<FavoriteDataModel> getMyFavoriteProducts(@Header("Authorization") String Authorization);
+
+    @FormUrlEncoded
+    @POST("api/myProducts")
+    Call<ProductDataModel> getMyAds(@Field("user_id") int user_id,
+                                    @Field("pagination") String pagination,
+                                    @Field("limit_per_page") int limit_per_page);
+
 
     @GET("api/my-notification")
     Call<NotificationDataModel> getNotification(@Header("Authorization") String user_token
