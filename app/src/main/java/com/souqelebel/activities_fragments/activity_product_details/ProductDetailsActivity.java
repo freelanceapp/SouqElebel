@@ -189,6 +189,11 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
 
                                     adapter.notifyDataSetChanged();
                                 }
+                                try {
+                                    if (productModel.getUser_like() != null) {
+                                        binding.checkFavorite.setChecked(true);
+                                    }
+                                    } catch (Exception e) {
 
                                 if (productModel.getUser_like()!=null){
                                     binding.checkFavorite.setChecked(true);
@@ -209,6 +214,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
                                     binding.flSlider.setVisibility(View.GONE);
                                 }
 
+                                    }
 
 
                                 binding.scrollView.setVisibility(View.VISIBLE);
@@ -256,12 +262,14 @@ public class ProductDetailsActivity extends AppCompatActivity implements Listene
     }
 
     public int like_dislike() {
+        Log.e("sssssssss",product_id+"");
+
         if (userModel != null) {
             try {
                 Log.e("llll", userModel.getUser().getToken());
 
                 Api.getService(Tags.base_url)
-                        .addFavoriteProduct(userModel.getUser().getToken(), productModel.getId() + "")
+                        .addFavoriteProduct(userModel.getUser().getToken(), product_id + "")
                         .enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

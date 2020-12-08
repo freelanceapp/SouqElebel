@@ -493,6 +493,8 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
                                 if (t.getMessage().toLowerCase().contains("failed to connect") || t.getMessage().toLowerCase().contains("unable to resolve host")) {
                                     Toast.makeText(AddAdsActivity.this, getString(R.string.something), Toast.LENGTH_SHORT).show();
                                 } else {
+                                    Log.e("ccccc",t.getMessage());
+
                                     Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -536,6 +538,8 @@ public class AddAdsActivity extends AppCompatActivity implements Listeners.BackL
                             if (response.code() == 500) {
                                 Toast.makeText(AddAdsActivity.this, "Server Error", Toast.LENGTH_SHORT).show();
                             }{
+                                Log.e("error",response.code()+"cccccccc"+response.errorBody());
+
                                 Toast.makeText(AddAdsActivity.this, getString(R.string.failed), Toast.LENGTH_SHORT).show();
                             }
                         }
