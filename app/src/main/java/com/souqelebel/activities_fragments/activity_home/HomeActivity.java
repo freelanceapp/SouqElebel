@@ -299,7 +299,6 @@ public class HomeActivity extends AppCompatActivity {
             updateHomUi();
             if (fragment_main == null) {
                 fragment_main = Fragment_Main.newInstance();
-                fragment_main.getMainCategory();
             }
 
 
