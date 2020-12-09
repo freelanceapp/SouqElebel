@@ -152,13 +152,7 @@ public class Fragment_Favorite extends Fragment {
         startActivity(intent);
     }
 
-    public void setProductItemData(FavoriteModel favoriteModel) {
 
-        Intent intent = new Intent(activity, ProductDetailsActivity.class);
-        intent.putExtra("product_id",favoriteModel.getProduct_id());
-
-        startActivity(intent);
-    }
     public void disLike(FavoriteModel favoriteModel, int adapterPosition) {
         ProgressDialog dialog = Common.createProgressDialog(activity,getString(R.string.wait));
         dialog.setCanceledOnTouchOutside(false);
