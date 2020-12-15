@@ -7,8 +7,6 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 
-import com.souqelebel.BR;
-import com.souqelebel.R;
 
 import java.io.Serializable;
 
@@ -43,6 +41,6 @@ public class ItemAddAds extends BaseObservable implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
-        notifyPropertyChanged(BR.content);
+        //notifyPropertyChanged(BR.content);
     }
 }

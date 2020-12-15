@@ -8,6 +8,7 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 
+//import com.souqelebel.BR;
 import com.souqelebel.BR;
 import com.souqelebel.R;
 
