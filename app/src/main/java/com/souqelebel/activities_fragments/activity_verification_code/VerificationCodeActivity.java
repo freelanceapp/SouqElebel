@@ -200,9 +200,12 @@ public class VerificationCodeActivity extends AppCompatActivity {
                     public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                         dialog.dismiss();
                         if (response.isSuccessful() && response.body() != null) {
+                            Log.e("eeeeee", response.body().getUser().getName());
                             preferences.create_update_userdata(VerificationCodeActivity.this, response.body());
                             navigateToHomeActivity();
                         } else {
+                            Log.e("mmmmmmmmmm", phone_code + phone);
+
 
                             if (response.code() == 500) {
                                 Toast.makeText(VerificationCodeActivity.this, "Server Error", Toast.LENGTH_SHORT).show();

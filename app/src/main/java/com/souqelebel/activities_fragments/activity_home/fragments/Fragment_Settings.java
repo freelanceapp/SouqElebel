@@ -267,10 +267,6 @@ public class Fragment_Settings extends Fragment implements Listeners.SettingActi
         }
     }
 
-
-
-
-
     @Override
     public void onInstagram() {
 
@@ -298,8 +294,7 @@ public class Fragment_Settings extends Fragment implements Listeners.SettingActi
     }
 
     @Override
-    public void onTwitter()
-    {
+    public void onTwitter() {
 
         if (settingmodel!=null){
             if (settingmodel.getSettings()!=null){

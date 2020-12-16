@@ -51,12 +51,12 @@ import io.paperdb.Paper;
 public class LoginActivity extends AppCompatActivity implements Listeners.LoginListener {
     private ActivityLoginBinding binding;
     private LoginModel loginModel;
-    private CountryModel[] countries = new CountryModel[]{   new CountryModel("EG", "Egypt", "+20", R.drawable.flag_eg, "EGP"), new CountryModel("SA", "Saudi Arabia", "+966", R.drawable.flag_sa, "SAR")};
+    private CountryModel[] countries = new CountryModel[]{  new CountryModel("SA", "Saudi Arabia", "+966", R.drawable.flag_sa, "SAR"), new CountryModel("EG", "Egypt", "+20", R.drawable.flag_eg, "EGP")};
     private List<CountryModel> countryModelList = new ArrayList<>();
     private CountriesAdapter countriesAdapter;
     private AlertDialog dialog;
     private String lang;
-    private String phone_code = "+20";
+    private String phone_code = "+966";
     private CartSingleton singleton;
     private int back = 0;
 
