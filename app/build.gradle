@@ -8,8 +8,8 @@ android {
         applicationId "com.souqelebel"
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.2"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -76,6 +76,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.google.android.exoplayer:exoplayer:2.11.1'
-
+    implementation 'com.android.databinding:compiler:3.2.0-alpha10'
 }
 apply plugin: 'com.google.gms.google-services'

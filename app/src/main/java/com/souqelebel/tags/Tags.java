@@ -7,7 +7,7 @@ public class Tags {
     //
     //https://xd.adobe.com/view/4766c6b8-c220-46c9-b350-c08556165e13-1235/
 
-    public static String base_url ="http://sub.jizanfish.com/";
+    public static String base_url ="http://souqepil.com/";
     public static final String IMAGE_URL = base_url + "storage/";
     public static final String session_login = "login";
     public static final String session_logout = "logout";

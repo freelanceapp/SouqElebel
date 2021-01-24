@@ -584,14 +584,11 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+
     public void logout() {
         if (userModel != null) {
-
-
             ProgressDialog dialog = Common.createProgressDialog(this, getString(R.string.wait));
             dialog.show();
-
-
             FirebaseInstanceId.getInstance()
                     .getInstanceId().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {

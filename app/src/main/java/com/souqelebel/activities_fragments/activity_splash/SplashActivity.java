@@ -17,6 +17,8 @@ import com.souqelebel.models.UserModel;
 import com.souqelebel.preferences.Preferences;
 
 
+import java.util.Locale;
+
 import io.paperdb.Paper;
 
 public class SplashActivity extends AppCompatActivity {
@@ -28,8 +30,10 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         Paper.init(newBase);
-        super.attachBaseContext(Language.updateResources(newBase, Paper.book().read("lang", "ar")));
+        super.attachBaseContext(Language.updateResources(newBase, Paper.book().read("lang", Locale.getDefault().getLanguage())));
+
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +43,15 @@ public class SplashActivity extends AppCompatActivity {
         userModel = preferences.getUserData(this);
         new Handler()
                 .postDelayed(()->{
-                    Intent intent;
                     if (userModel==null){
-                        intent = new Intent(this, LoginActivity.class);
+                        Intent intent = new Intent(this,LoginActivity.class);
+                        startActivity(intent);
+                        finish();
                     }else {
-                        intent = new Intent(this, HomeActivity.class);
+                        Intent intent = new Intent(this,HomeActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
-                    startActivity(intent);
-                    finish();
                 },2000);
 
     }
